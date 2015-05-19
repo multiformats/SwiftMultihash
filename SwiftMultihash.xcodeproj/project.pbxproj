@@ -403,6 +403,7 @@
 				ABF69FE71B0A79CF00BFED31 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		ABF69FE81B0A79CF00BFED31 /* Build configuration list for PBXNativeTarget "SwiftMultihashTests" */ = {
 			isa = XCConfigurationList;
@@ -411,6 +412,7 @@
 				ABF69FEA1B0A79CF00BFED31 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
