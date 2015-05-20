@@ -30,7 +30,7 @@ SHA3        = 0x14,
 BLAKE2B     = 0x40,
 BLAKE2S     = 0x41
 
-let Names: [String : Int] = [
+public let Names: [String : Int] = [
     "sha1"      : SHA1,
     "sha2-256"  : SHA2_256,
     "sha2-512"  : SHA2_512,
@@ -39,7 +39,7 @@ let Names: [String : Int] = [
     "blake2s"   : BLAKE2S
 ]
 
-let Codes: [Int : String] = [
+public let Codes: [Int : String] = [
     SHA1        : "sha1",
     SHA2_256    : "sha2-256",
     SHA2_512    : "sha2-512",
@@ -58,14 +58,15 @@ let DefaultLengths: [Int : Int] = [
 ]
 
 public struct DecodedMultihash {
-    let code    : Int
-    let name    : String
-    let length  : Int
-    let digest  : [uint8]
+    public let
+        code    : Int,
+        name    : String?,
+        length  : Int,
+        digest  : [uint8]
 }
 
 public struct Multihash {
-    let value: [uint8]
+    public let value: [uint8]
 }
 
 extension Multihash {
@@ -78,7 +79,7 @@ extension Multihash {
     }
 }
 
-func fromHexString(theString: String) -> (Multihash?, NSError?) {
+public func fromHexString(theString: String) -> (Multihash?, NSError?) {
     if let buf = Hex.decodeString(theString) {
         return cast(buf)
     }
@@ -108,7 +109,7 @@ public func decode(buf: [uint8]) -> (DecodedMultihash?, NSError?) {
         return (nil, ErrTooLong)
     }
 
-    let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])]!, length: Int(buf[1]), digest: Array(buf[2...buf.count]))
+    let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
     
     if dm.digest.count != dm.length {
         return (nil, ErrInconsistentLen(dm))
@@ -131,17 +132,17 @@ public func encode(buf: [uint8], code: Int?) -> ([uint8]?, NSError?) {
     var pre = [0,0] as [uint8]
     
     pre[0] = uint8(code!)
-    pre[1] = uint8(pre.count)
+    pre[1] = uint8(buf.count)
     pre.extend(buf)
     return (pre,nil)
 }
 
-func encodeName(buf: [uint8], name: String) -> ([uint8]?,NSError?) {
+public func encodeName(buf: [uint8], name: String) -> ([uint8]?,NSError?) {
     return encode(buf, Names[name])
 }
 
 /// ValidCode checks whether a multihash code is valid.
-func validCode(code: Int?) -> Bool {
+public func validCode(code: Int?) -> Bool {
     
     if let c = code {
         if appCode(c) == true {
@@ -156,7 +157,7 @@ func validCode(code: Int?) -> Bool {
 }
 
 /// AppCode checks whether a multihash code is part of the App range.
-func appCode(code: Int) -> Bool {
+public func appCode(code: Int) -> Bool {
     return code >= 0 && code < 0x10
 }
 
@@ -167,6 +168,8 @@ public struct Hex {
     public static func encodeToString(hexBytes: [uint8]) -> String {
         var outString = ""
         for val in hexBytes {
+            // Prefix with 0 for values less than 16.
+            if val < 16 { outString += "0" }
             outString += String(val, radix: 16)
         }
         return outString
