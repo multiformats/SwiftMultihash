@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		AB342BE11B0CDCB800BB8D19 /* SwiftHex.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */; };
 		AB342BE61B0D237700BB8D19 /* SwiftHex.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AB6904E61B16217F00AF3A31 /* SwiftBase58.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */; };
+		AB6904E71B16271800AF3A31 /* SwiftBase58.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ABF69FDB1B0A79CF00BFED31 /* SwiftMultihash.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF69FCF1B0A79CF00BFED31 /* SwiftMultihash.framework */; };
 		ABF69FE21B0A79CF00BFED31 /* SwiftMultihashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF69FE11B0A79CF00BFED31 /* SwiftMultihashTests.swift */; };
 		ABF69FEC1B0A79EB00BFED31 /* SwiftMultihash.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF69FEB1B0A79EB00BFED31 /* SwiftMultihash.swift */; };
@@ -31,6 +33,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				AB6904E71B16271800AF3A31 /* SwiftBase58.framework in CopyFiles */,
 				AB342BE61B0D237700BB8D19 /* SwiftHex.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftHex.framework; path = Carthage/Build/Mac/SwiftHex.framework; sourceTree = "<group>"; };
+		AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftBase58.framework; path = Carthage/Build/Mac/SwiftBase58.framework; sourceTree = "<group>"; };
 		ABF69FCF1B0A79CF00BFED31 /* SwiftMultihash.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftMultihash.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF69FD31B0A79CF00BFED31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ABF69FDA1B0A79CF00BFED31 /* SwiftMultihashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMultihashTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB6904E61B16217F00AF3A31 /* SwiftBase58.framework in Frameworks */,
 				AB342BE11B0CDCB800BB8D19 /* SwiftHex.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +75,7 @@
 		ABF69FC51B0A79CF00BFED31 = {
 			isa = PBXGroup;
 			children = (
+				AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */,
 				AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */,
 				ABF69FD11B0A79CF00BFED31 /* SwiftMultihash */,
 				ABF69FDE1B0A79CF00BFED31 /* SwiftMultihashTests */,

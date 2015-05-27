@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftHex
+import SwiftBase58
 
 /// Errors
 let ErrDomain = "MultiHashDomain"
@@ -85,6 +86,16 @@ public func fromHexString(theString: String) -> (Multihash?, NSError?) {
     }
     return (nil, ErrHexFail)
 }
+
+public func b58String(mhash: Multihash) -> String {
+    return SwiftBase58.encode(mhash.value)
+}
+
+public func fromB58String(str: String) -> (Multihash?, NSError?) {
+    let decodedBytes = SwiftBase58.decode(str)
+    return cast(decodedBytes)
+}
+
 
 public func cast(buf: [uint8]) -> (Multihash?, NSError?) {
     let (dm, err) = decode(buf)

@@ -50,7 +50,7 @@ class SwiftMultihashTests: XCTestCase {
         TestCase(hex: "0beec7b5", code: 0x11, name: "sha1"),
         TestCase(hex: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", code: 0x12, name: "sha2-256"),
         TestCase(hex: "2c26b46b", code: 0x12, name: "sha2-256"),
-        //TestCase(hex: "0beec7b5ea3f0fdbc9", code: 0x40, name: "blake2b")
+        TestCase(hex: "0beec7b5ea3f0fdbc9", code: 0x40, name: "blake2b")
     ]
     
     override func setUp() {
@@ -63,11 +63,6 @@ class SwiftMultihashTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
-    }
-
     func testEncode() {
         for tc in testCases {
             let ob = SwiftHex.decodeString(tc.hex)
