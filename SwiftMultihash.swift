@@ -68,6 +68,10 @@ public struct DecodedMultihash {
 
 public struct Multihash {
     public let value: [uint8]
+    
+    public init(_ val: [uint8]) {
+        self.value = val
+    }
 }
 
 extension Multihash {
@@ -108,7 +112,7 @@ public func cast(buf: [uint8]) -> (Multihash?, NSError?) {
         return (nil,ErrUnknownCode)
     }
     
-    return (Multihash(value: buf),nil)
+    return (Multihash(buf),nil)
 }
 
 public func decode(buf: [uint8]) -> (DecodedMultihash?, NSError?) {
