@@ -10,6 +10,14 @@ github "NeoTeo/SwiftMultihash"
 Then, in the root of your project, type:
 `carthage update`
 
+If you need the Multihash Sum functions:
+Because the CryptoSwift project defaults to building for iOS and I haven't figured out how to tell Carthage to tell Xcode 
+which build to do you will have to do the following:
+
+- In Xcode open the CryptoSwift project in `Carthage/Checkouts/CryptoSwift/CryptoSwift.xcodeproject`
+- Select the project and in the Build Settings change the "Base SDK" to "Latest OS X". Close the project.
+- from the Multihash root type `carthage build`
+
 ##### You will then need to add SwiftMultihash.framework to your Xcode project:
 
 - Select your target's General tab.

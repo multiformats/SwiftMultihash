@@ -10,6 +10,7 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
+//FIXME: look into making these an enum
 /// Errors
 let ErrDomain = "MultiHashDomain"
 public let
@@ -23,7 +24,7 @@ func ErrInconsistentLen(dm: DecodedMultihash) -> NSError {
         return NSError(domain: ErrDomain, code: -6, userInfo: [NSLocalizedDescriptionKey : "Multihash length inconsistent: \(dm)"])
 }
 
-let
+public let
 SHA1        = 0x11,
 SHA2_256    = 0x12,
 SHA2_512    = 0x13,
@@ -74,7 +75,7 @@ public struct Multihash {
     }
 }
 
-extension Multihash {
+extension Multihash : Equatable {
     public func hexString() -> String {
         return SwiftHex.encodeToString(value)
     }
@@ -82,6 +83,10 @@ extension Multihash {
     public func string() -> String {
         return self.hexString()
     }
+}
+
+public func ==(lhs: Multihash, rhs: Multihash) -> Bool {
+    return lhs.value == rhs.value
 }
 
 public func fromHexString(theString: String) -> (Multihash?, NSError?) {

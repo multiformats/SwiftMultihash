@@ -1,3 +1,4 @@
+github "krzyzanowskim/CryptoSwift" "0.0.10"
 github "NeoTeo/SwiftGMP" "v0.3.7"
 github "NeoTeo/SwiftHex" "v0.2"
-github "NeoTeo/SwiftBase58" "v0.1.2"
+github "NeoTeo/SwiftBase58" "v0.1.3"
