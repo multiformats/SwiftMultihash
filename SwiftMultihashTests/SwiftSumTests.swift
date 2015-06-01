@@ -31,37 +31,45 @@ class SwiftSumTests: XCTestCase {
     func testSum() {
         for tc in sumTestCases {
             var err: NSError
-            let (m1, errm1) = fromHexString(tc.hex)
-            if let err = errm1 {
+
+            let m1: Multihash
+            switch fromHexString(tc.hex) {
+            case .Error(let err):
                 XCTFail(err.localizedDescription)
                 continue
+            case .Value(let val):
+                m1 = val.unbox
             }
             
-            let (m2, errm2) = sum(Array(tc.input.utf8), tc.code, tc.length)
-            if let err = errm2 {
+            let m2: Multihash
+            switch sum(Array(tc.input.utf8), tc.code, tc.length) {
+            case .Error(let err):
                 XCTFail("\(tc.code) sum failed. \(err.localizedDescription)")
+                continue
+            case .Value(let val):
+                m2 = val.unbox
             }
-            // clumsy unwrapping - Bleh, Swift!
-            if let m1 = m1, m2 = m2 {
-                if m1 != m2 {
-                    XCTFail("sum failed: \(m1.value) \(m2.value)")
-                }
-                
-                let hexStr = m1.hexString()
-                if hexStr != tc.hex {
-                    XCTFail("Hex strings not the same.")
-                }
-                
-                let b58Str = b58String(m1)
-                let (m3, errm3) = fromB58String(b58Str)
-                if let m3 = m3 {
-                    if m3 != m1 {
-                        XCTFail("b58 failing bytes.")
-                    } else if b58Str != b58String(m3) {
-                        XCTFail("b58 failing string.")
-                    }
-                } else {
-                    XCTFail("Failed to decode b58.")
+
+            if m1 != m2 {
+                XCTFail("sum failed: \(m1.value) \(m2.value)")
+            }
+            
+            let hexStr = m1.hexString()
+            if hexStr != tc.hex {
+                XCTFail("Hex strings not the same.")
+            }
+            
+            let b58Str = b58String(m1)
+            
+            switch fromB58String(b58Str) {
+            case .Error(let err):
+                XCTFail("Failed to decode b58.")
+            case .Value(let val):
+                let m3 = val.unbox
+                if m3 != m1 {
+                    XCTFail("b58 failing bytes.")
+                } else if b58Str != b58String(m3) {
+                    XCTFail("b58 failing string.")
                 }
             }
         }
