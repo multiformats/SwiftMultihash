@@ -16,7 +16,7 @@ func sumError(code: Int, msg: String) -> NSError {
 public func sum(data: [uint8], code: Int, length: Int) -> Result<Multihash> {
     
     if validCode(code) == false {
-        return .Error(sumError(-8, "Invalid multihash code \(code)"))
+        return .Failure(sumError(-8, "Invalid multihash code \(code)"))
     }
     
     var sumData: [uint8]
@@ -28,14 +28,14 @@ public func sum(data: [uint8], code: Int, length: Int) -> Result<Multihash> {
     case SHA2_512:
         sumData = sumSHA512(data)
     default:
-        return .Error(sumError(-7, "Function not implemented. Complain to lib maintainer."))
+        return .Failure(sumError(-7, "Function not implemented. Complain to lib maintainer."))
     }
 
     var len = length
     
     if len < 0 {
         let dLen = DefaultLengths[code]
-        if dLen == nil { return .Error(sumError(-9, "No default length for code \(code)")) }
+        if dLen == nil { return .Failure(sumError(-9, "No default length for code \(code)")) }
         len = dLen!
     }
     
@@ -43,10 +43,10 @@ public func sum(data: [uint8], code: Int, length: Int) -> Result<Multihash> {
 
     let result = SwiftMultihash.encode(bytes,code)
     switch result {
-    case .Value(let encBytes):
-        return .Value(Box(Multihash(encBytes.unbox)))
-    case .Error(let err):
-        return .Error(err)
+    case .Success(let encBytes):
+        return .Success(Box(Multihash(encBytes.unbox)))
+    case .Failure(let err):
+        return .Failure(err)
      }
 }
 

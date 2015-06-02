@@ -37,7 +37,7 @@ extension TestCase {
             b.extend(ob)
             return cast(b)
         } else {
-            return .Error(ErrHexFail) //(nil, ErrHexFail)
+            return .Failure(ErrHexFail) //(nil, ErrHexFail)
         }
         
     }
@@ -79,10 +79,10 @@ class SwiftMultihashTests: XCTestCase {
             
             let encC: [uint8]
             switch SwiftMultihash.encode(ob!, tc.code) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let val):
+            case .Success(let val):
                 encC = val.unbox
             }
             
@@ -92,10 +92,10 @@ class SwiftMultihashTests: XCTestCase {
             
             let encN: [uint8]
             switch SwiftMultihash.encodeName(ob!, tc.name) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let val):
+            case .Success(let val):
                 encN = val.unbox
             }
             if encN != nb {
@@ -103,10 +103,10 @@ class SwiftMultihashTests: XCTestCase {
             }
 
             switch tc.MultiHash() {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let val):
+            case .Success(let val):
                 if val.unbox.value != nb {
                     XCTFail("Multihash func mismatch.")
                 }
@@ -130,10 +130,10 @@ class SwiftMultihashTests: XCTestCase {
             
             let dec: DecodedMultihash
             switch SwiftMultihash.decode(nb) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let box):
+            case .Success(let box):
                 dec = box.unbox
             }
             
@@ -171,11 +171,11 @@ class SwiftMultihashTests: XCTestCase {
 
         if let buf = SwiftHex.decodeString("0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33") {
             switch encodeName(buf, "sha1") {
-            case .Value(let box):
+            case .Success(let box):
                 let mhbuf = box.unbox
                 
                 switch decode(mhbuf) {
-                case .Value(let box):
+                case .Success(let box):
                     let o = box.unbox
                     let mhhex = SwiftHex.encodeToString(o.digest)
                     println("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
@@ -219,14 +219,14 @@ class SwiftMultihashTests: XCTestCase {
             let nb = pre + ob!
 
             switch cast(nb) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
             default: break
             }
             
             switch cast(ob!) {
-            case .Value:
+            case .Success:
                 XCTFail("Cast failed to detect non-multihash")
                 continue
             default: break
@@ -250,10 +250,10 @@ class SwiftMultihashTests: XCTestCase {
             let hs = SwiftHex.encodeToString(nb)
             let mh: Multihash
             switch fromHexString(hs) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let box):
+            case .Success(let box):
                 mh = box.unbox
             }
             

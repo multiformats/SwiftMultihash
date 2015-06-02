@@ -34,19 +34,19 @@ class SwiftSumTests: XCTestCase {
 
             let m1: Multihash
             switch fromHexString(tc.hex) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Value(let val):
+            case .Success(let val):
                 m1 = val.unbox
             }
             
             let m2: Multihash
             switch sum(Array(tc.input.utf8), tc.code, tc.length) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail("\(tc.code) sum failed. \(err.localizedDescription)")
                 continue
-            case .Value(let val):
+            case .Success(let val):
                 m2 = val.unbox
             }
 
@@ -62,9 +62,9 @@ class SwiftSumTests: XCTestCase {
             let b58Str = b58String(m1)
             
             switch fromB58String(b58Str) {
-            case .Error(let err):
+            case .Failure(let err):
                 XCTFail("Failed to decode b58.")
-            case .Value(let val):
+            case .Success(let val):
                 let m3 = val.unbox
                 if m3 != m1 {
                     XCTFail("b58 failing bytes.")

@@ -75,8 +75,16 @@ final public class Box<T> {
 
 // A result can either be a Multihash or an NSError
 public enum Result<T> {
-    case Value(Box<T>)
-    case Error(NSError)
+    case Success(Box<T>)
+    case Failure(NSError)
+    
+    init(value: T) {
+        self = .Success(Box(value))
+    }
+    
+    init(error: NSError) {
+        self = .Failure(error)
+    }
 }
 
 public struct Multihash {
@@ -105,7 +113,7 @@ public func fromHexString(theString: String) -> Result<Multihash> {
     if let buf = SwiftHex.decodeString(theString) {
         return cast(buf)
     }
-    return .Error(ErrHexFail)
+    return .Failure(ErrHexFail)
 }
 
 public func b58String(mhash: Multihash) -> String {
@@ -121,31 +129,31 @@ public func fromB58String(str: String) -> Result<Multihash> {
 public func cast(buf: [uint8]) -> Result<Multihash> {
     let result = decode(buf)
     switch result {
-    case .Error(let err):
-        return .Error(err)
-    case .Value(let dm):
+    case .Failure(let err):
+        return .Failure(err)
+    case .Success(let dm):
         if validCode(dm.unbox.code) == false {
-            return .Error(ErrUnknownCode)
+            return .Failure(ErrUnknownCode)
         }
     }
-    return .Value(Box(Multihash(buf)))
+    return .Success(Box(Multihash(buf)))
 }
 
 public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
     
     if buf.count < 3 {
-        return .Error(ErrTooShort)
+        return .Failure(ErrTooShort)
     }
     if buf.count > 129 {
-        return .Error(ErrTooLong)
+        return .Failure(ErrTooLong)
     }
 
     let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
     
     if dm.digest.count != dm.length {
-        return .Error(ErrInconsistentLen(dm))
+        return .Failure(ErrInconsistentLen(dm))
     }
-    return .Value(Box(dm))
+    return .Success(Box(dm))
 }
 
 /// Encode a hash digest along with the specified function code
@@ -153,11 +161,11 @@ public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
 //public func encode(buf: [uint8], code: Int?) -> ([uint8]?, NSError?) {
 public func encode(buf: [uint8], code: Int?) -> Result<[uint8]> {
     if validCode(code) == false {
-        return .Error(ErrUnknownCode)
+        return .Failure(ErrUnknownCode)
     }
     
     if buf.count > 129 {
-        return .Error(ErrTooLong)
+        return .Failure(ErrTooLong)
     }
     
     var pre = [0,0] as [uint8]
@@ -165,7 +173,7 @@ public func encode(buf: [uint8], code: Int?) -> Result<[uint8]> {
     pre[0] = uint8(code!)
     pre[1] = uint8(buf.count)
     pre.extend(buf)
-    return .Value(Box(pre))
+    return .Success(Box(pre))
 }
 
 public func encodeName(buf: [uint8], name: String) -> Result<[uint8]> {
