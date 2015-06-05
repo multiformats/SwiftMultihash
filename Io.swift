@@ -10,13 +10,8 @@
     It is a direct translation of the go implementation and as such
     may use some paradigms that are not dogmatic Swift.
 
-    A
-Maybe it is better to make an extension to the NSStream that adds a
-readMultihash and writeMultihash rather than all this Golang stuff.
-We still need to provide the Reader and Writer protocols so the ipfs calls
-can stay the same, but those can just call the extended NSStream.
-Perhaps we can even avoid extending NSStream by embedding an NSInputStream
-and NSOutputstream in the MultihashReader and MultihashWriter structs.
+    A more Swifty future version would extend NSInputStream and NSOutputStream
+    with multihashReader and multihashWriter methods.
 */
 
 import Foundation
