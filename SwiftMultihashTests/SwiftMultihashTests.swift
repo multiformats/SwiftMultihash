@@ -20,24 +20,32 @@ let tCodes = [
     0x41: "blake2s",
 ]
 
-struct TestCase {
+public struct TestCase {
     let hex     : String
     let code    : Int
     let name    : String
 }
 
-extension TestCase {
-//    func MultiHash() -> (Multihash?, NSError?) {
-    func MultiHash() -> Result<Multihash> {
+public let testCases = [
+    TestCase(hex: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33", code: 0x11, name: "sha1"),
+    TestCase(hex: "0beec7b5", code: 0x11, name: "sha1"),
+    TestCase(hex: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", code: 0x12, name: "sha2-256"),
+    TestCase(hex: "2c26b46b", code: 0x12, name: "sha2-256"),
+    TestCase(hex: "0beec7b5ea3f0fdbc9", code: 0x40, name: "blake2b")
+]
+
+public extension TestCase {
+
+    func multihash() -> Result<Multihash> {
         if let ob = SwiftHex.decodeString(hex) {
-            //var b = [uint8](count: ob.count, repeatedValue: 0x0)
+
             var b: [uint8] = [0,0]
             b[0] = uint8(code)
             b[1] = uint8(ob.count)
             b.extend(ob)
             return cast(b)
         } else {
-            return .Failure(ErrHexFail) //(nil, ErrHexFail)
+            return .Failure(ErrHexFail)
         }
         
     }
@@ -46,13 +54,6 @@ extension TestCase {
 class SwiftMultihashTests: XCTestCase {
     
     
-    let testCases = [
-        TestCase(hex: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33", code: 0x11, name: "sha1"),
-        TestCase(hex: "0beec7b5", code: 0x11, name: "sha1"),
-        TestCase(hex: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae", code: 0x12, name: "sha2-256"),
-        TestCase(hex: "2c26b46b", code: 0x12, name: "sha2-256"),
-        TestCase(hex: "0beec7b5ea3f0fdbc9", code: 0x40, name: "blake2b")
-    ]
     
     override func setUp() {
         super.setUp()
@@ -102,7 +103,7 @@ class SwiftMultihashTests: XCTestCase {
                 XCTFail("Encoded byte mismatch: \(encN) \(nb)")
             }
 
-            switch tc.MultiHash() {
+            switch tc.multihash() {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
