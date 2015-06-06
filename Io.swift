@@ -2,8 +2,8 @@
 //  Io.swift
 //  SwiftMultihash
 //
-//  Created by Teo on 01/06/15.
-//  Copyright (c) 2015 Teo. All rights reserved.
+//  Created by Matteo Sartori on 01/06/15.
+//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
 //
 /*
     This is the inital port of the golang io wrapper for Multihash.

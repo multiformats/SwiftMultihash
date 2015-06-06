@@ -2,8 +2,8 @@
 //  SwiftMultihashTests.swift
 //  SwiftMultihashTests
 //
-//  Created by Teo on 18/05/15.
-//  Copyright (c) 2015 Teo. All rights reserved.
+//  Created by Matteo Sartori on 18/05/15.
+//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
 //
 
 import Cocoa

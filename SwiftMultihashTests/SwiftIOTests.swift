@@ -2,8 +2,8 @@
 //  SwiftIOTests.swift
 //  SwiftMultihash
 //
-//  Created by Teo on 04/06/15.
-//  Copyright (c) 2015 Teo. All rights reserved.
+//  Created by Matteo Sartori on 04/06/15.
+//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
 //
 
 import Foundation
