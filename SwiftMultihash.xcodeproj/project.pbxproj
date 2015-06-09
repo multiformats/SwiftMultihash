@@ -15,7 +15,6 @@
 		AB6904E61B16217F00AF3A31 /* SwiftBase58.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */; };
 		AB6904E71B16271800AF3A31 /* SwiftBase58.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AB7B6F4D1B1A2DDF0035574A /* Sum.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7B6F4C1B1A2DDF0035574A /* Sum.swift */; };
-		AB7B6F4F1B1A32360035574A /* CryptoSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB7B6F4E1B1A32360035574A /* CryptoSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ABF69FDB1B0A79CF00BFED31 /* SwiftMultihash.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ABF69FCF1B0A79CF00BFED31 /* SwiftMultihash.framework */; };
 		ABF69FE21B0A79CF00BFED31 /* SwiftMultihashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF69FE11B0A79CF00BFED31 /* SwiftMultihashTests.swift */; };
 		ABF69FEC1B0A79EB00BFED31 /* SwiftMultihash.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF69FEB1B0A79EB00BFED31 /* SwiftMultihash.swift */; };
@@ -38,7 +37,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AB7B6F4F1B1A32360035574A /* CryptoSwift.framework in CopyFiles */,
 				AB6904E71B16271800AF3A31 /* SwiftBase58.framework in CopyFiles */,
 				AB342BE61B0D237700BB8D19 /* SwiftHex.framework in CopyFiles */,
 			);
@@ -53,7 +51,6 @@
 		AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftHex.framework; path = Carthage/Build/Mac/SwiftHex.framework; sourceTree = "<group>"; };
 		AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftBase58.framework; path = Carthage/Build/Mac/SwiftBase58.framework; sourceTree = "<group>"; };
 		AB7B6F4C1B1A2DDF0035574A /* Sum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Sum.swift; path = ../Sum.swift; sourceTree = "<group>"; };
-		AB7B6F4E1B1A32360035574A /* CryptoSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoSwift.framework; path = Carthage/Build/Mac/CryptoSwift.framework; sourceTree = "<group>"; };
 		ABF69FCF1B0A79CF00BFED31 /* SwiftMultihash.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftMultihash.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF69FD31B0A79CF00BFED31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ABF69FDA1B0A79CF00BFED31 /* SwiftMultihashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftMultihashTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,7 +83,6 @@
 		ABF69FC51B0A79CF00BFED31 = {
 			isa = PBXGroup;
 			children = (
-				AB7B6F4E1B1A32360035574A /* CryptoSwift.framework */,
 				AB6904E51B16217F00AF3A31 /* SwiftBase58.framework */,
 				AB342BE01B0CDCB800BB8D19 /* SwiftHex.framework */,
 				ABF69FD11B0A79CF00BFED31 /* SwiftMultihash */,
@@ -198,7 +194,8 @@
 		ABF69FC61B0A79CF00BFED31 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = Teo;
 				TargetAttributes = {
 					ABF69FCE1B0A79CF00BFED31 = {
@@ -298,6 +295,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -317,6 +315,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -357,6 +356,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_INCLUDE_PATHS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -380,8 +380,14 @@
 				INFOPLIST_FILE = SwiftMultihash/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Terminal-Glow.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/CommonCrypto";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -404,8 +410,14 @@
 				INFOPLIST_FILE = SwiftMultihash/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/lib/system,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Terminal-Glow.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/CommonCrypto";
 			};
 			name = Release;
 		};
@@ -425,6 +437,7 @@
 				);
 				INFOPLIST_FILE = SwiftMultihashTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Terminal-Glow.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -441,6 +454,7 @@
 				);
 				INFOPLIST_FILE = SwiftMultihashTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Terminal-Glow.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -15,7 +15,7 @@
 */
 
 import Foundation
-import SwiftMultihash
+//import SwiftMultihash
 
 public let
     ErrEOB      = NSError(domain: ErrDomain, code: -7, userInfo: [NSLocalizedDescriptionKey : "Error! End of buffer reached."]),
@@ -68,7 +68,7 @@ extension MultihashReader: Reader {
 
         // Read just the header first.
         var multihashHeader = [uint8](count: 2, repeatedValue: 0)
-        var resultCode = inStream.read(&multihashHeader, maxLength: multihashHeader.count)
+        let resultCode = inStream.read(&multihashHeader, maxLength: multihashHeader.count)
         if resultCode <= 0 {
             return parseReadError(resultCode)
         }
@@ -77,13 +77,13 @@ extension MultihashReader: Reader {
     
         if hashLength > 127 {
             // return varints not yet supported error
-            return Result(error: NSError())
+            return Result(error: ErrEOB)
         }
         
         // Read the rest
         var multiHash = [uint8](count: hashLength, repeatedValue: 0)
         if inStream.read(&multiHash, maxLength: hashLength) <= 0 {
-            return Result(error: NSError())
+            return Result(error: ErrEOB)
         }
         
         return cast(multihashHeader+multiHash)

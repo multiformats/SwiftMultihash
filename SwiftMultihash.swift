@@ -159,7 +159,7 @@ public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
 /// Encode a hash digest along with the specified function code
 /// Note: The length is derived from the length of the digest.
 //public func encode(buf: [uint8], code: Int?) -> ([uint8]?, NSError?) {
-public func encode(buf: [uint8], code: Int?) -> Result<[uint8]> {
+public func encode(buf: [uint8], _ code: Int?) -> Result<[uint8]> {
     if validCode(code) == false {
         return .Failure(ErrUnknownCode)
     }
@@ -176,7 +176,7 @@ public func encode(buf: [uint8], code: Int?) -> Result<[uint8]> {
     return .Success(Box(pre))
 }
 
-public func encodeName(buf: [uint8], name: String) -> Result<[uint8]> {
+public func encodeName(buf: [uint8], _ name: String) -> Result<[uint8]> {
     return encode(buf, Names[name])
 }
 

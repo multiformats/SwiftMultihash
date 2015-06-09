@@ -179,7 +179,7 @@ class SwiftMultihashTests: XCTestCase {
                 case .Success(let box):
                     let o = box.unbox
                     let mhhex = SwiftHex.encodeToString(o.digest)
-                    println("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
+                    print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
                 default: break
                 }
             default: break
