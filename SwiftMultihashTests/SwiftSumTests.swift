@@ -30,7 +30,6 @@ class SwiftSumTests: XCTestCase {
     
     func testSum() {
         for tc in sumTestCases {
-            var err: NSError
 
             let m1: Multihash
             switch fromHexString(tc.hex) {
@@ -38,7 +37,7 @@ class SwiftSumTests: XCTestCase {
                 XCTFail(err.localizedDescription)
                 continue
             case .Success(let val):
-                m1 = val.unbox
+                m1 = val
             }
             
             let m2: Multihash
@@ -47,7 +46,7 @@ class SwiftSumTests: XCTestCase {
                 XCTFail("\(tc.code) sum failed. \(err.localizedDescription)")
                 continue
             case .Success(let val):
-                m2 = val.unbox
+                m2 = val
             }
 
             if m1 != m2 {
@@ -63,9 +62,9 @@ class SwiftSumTests: XCTestCase {
             
             switch fromB58String(b58Str) {
             case .Failure(let err):
-                XCTFail("Failed to decode b58.")
+                XCTFail("Failed to decode b58.\(err)")
             case .Success(let val):
-                let m3 = val.unbox
+                let m3 = val
                 if m3 != m1 {
                     XCTFail("b58 failing bytes.")
                 } else if b58Str != b58String(m3) {

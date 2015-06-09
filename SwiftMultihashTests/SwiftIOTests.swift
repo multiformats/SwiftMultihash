@@ -16,7 +16,7 @@ class SwiftIOTests: XCTestCase {
         
         let cap = 1024
         var buf = [uint8](count: cap, repeatedValue: 0)
-        var outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
+        let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         // Set up an NSStream we can write to and read from.
         for tc in testCases {
@@ -25,8 +25,8 @@ class SwiftIOTests: XCTestCase {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 return
-            case .Success(let box):
-                let multihash = box.unbox
+            case .Success(let multihash):
+//                let multihash = box.unbox
                 if outStream.write(multihash.value, maxLength: multihash.value.count) < 0 {
                     XCTFail("Failed to write to outStream.")
                     return
@@ -34,7 +34,7 @@ class SwiftIOTests: XCTestCase {
             }
         }
         
-        var inStream = NSInputStream(data: NSData(bytes: buf, length: buf.count))
+        let inStream = NSInputStream(data: NSData(bytes: buf, length: buf.count))
         inStream.open()
         let reader = newReader(inStream)
         
@@ -43,16 +43,16 @@ class SwiftIOTests: XCTestCase {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 return
-            case .Success(let box):
+            case .Success(let testMultihash):
                 
-                let testMultihash = box.unbox
+//                let testMultihash = box.unbox
                 
                 switch reader.readMultihash() {
                 case .Failure(let err):
                     XCTFail(err.localizedDescription)
                     continue
-                case .Success(let box):
-                    let storedMultihash = box.unbox
+                case .Success(let storedMultihash):
+//                    let storedMultihash = box.unbox
                     if storedMultihash != testMultihash {
                         XCTFail("the storedMultihash and the test multihash should be equal.")
                     }
@@ -67,7 +67,7 @@ class SwiftIOTests: XCTestCase {
         
         let cap = 1024
         var buf = [uint8](count: cap, repeatedValue: 0)
-        var outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
+        let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         
         let writer = newWriter(outStream)
@@ -77,15 +77,15 @@ class SwiftIOTests: XCTestCase {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Success(let box):
-                let testMultihash = box.unbox
+            case .Success(let testMultihash):
+
                 if let err = writer.writeMultihash(testMultihash) {
                     XCTFail(err.localizedDescription)
                     continue
                 }
                 
                 var storedMultihash = [uint8](count: testMultihash.value.count, repeatedValue: 0)
-                var inStream = NSInputStream(data: NSData(bytes: testMultihash.value, length: testMultihash.value.count))
+                let inStream = NSInputStream(data: NSData(bytes: testMultihash.value, length: testMultihash.value.count))
                 inStream.open()
                 
                 if inStream.read(&storedMultihash, maxLength: buf.count) < 0 {

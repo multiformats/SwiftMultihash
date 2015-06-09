@@ -60,7 +60,8 @@ extension MultihashReader: Reader {
             return parseReadError(r)
         }
 
-        return Result(value: readBuf)
+//        return Result(value: readBuf)
+        return Result(readBuf)
     }
 
 

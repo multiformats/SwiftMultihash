@@ -84,7 +84,7 @@ class SwiftMultihashTests: XCTestCase {
                 XCTFail(err.localizedDescription)
                 continue
             case .Success(let val):
-                encC = val.unbox
+                encC = val
             }
             
             if encC != nb {
@@ -97,7 +97,7 @@ class SwiftMultihashTests: XCTestCase {
                 XCTFail(err.localizedDescription)
                 continue
             case .Success(let val):
-                encN = val.unbox
+                encN = val
             }
             if encN != nb {
                 XCTFail("Encoded byte mismatch: \(encN) \(nb)")
@@ -108,7 +108,7 @@ class SwiftMultihashTests: XCTestCase {
                 XCTFail(err.localizedDescription)
                 continue
             case .Success(let val):
-                if val.unbox.value != nb {
+                if val.value != nb {
                     XCTFail("Multihash func mismatch.")
                 }
             }
@@ -134,8 +134,8 @@ class SwiftMultihashTests: XCTestCase {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Success(let box):
-                dec = box.unbox
+            case .Success(let val):
+                dec = val
             }
             
             if dec.code != tc.code {
@@ -172,12 +172,10 @@ class SwiftMultihashTests: XCTestCase {
 
         if let buf = SwiftHex.decodeString("0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33") {
             switch encodeName(buf, "sha1") {
-            case .Success(let box):
-                let mhbuf = box.unbox
+            case .Success(let mhbuf):
                 
                 switch decode(mhbuf) {
-                case .Success(let box):
-                    let o = box.unbox
+                case .Success(let o):
                     let mhhex = SwiftHex.encodeToString(o.digest)
                     print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
                 default: break
@@ -254,8 +252,8 @@ class SwiftMultihashTests: XCTestCase {
             case .Failure(let err):
                 XCTFail(err.localizedDescription)
                 continue
-            case .Success(let box):
-                mh = box.unbox
+            case .Success(let val):
+                mh = val
             }
             
             if mh.value != nb {

@@ -45,7 +45,8 @@ public func sum(data: [uint8], _ code: Int, _ length: Int) -> Result<Multihash> 
     let result = SwiftMultihash.encode(bytes,code)
     switch result {
     case .Success(let encBytes):
-        return .Success(Box(Multihash(encBytes.unbox)))
+//        return .Success(Box(Multihash(encBytes.unbox)))
+        return .Success(Multihash(encBytes))
     case .Failure(let err):
         return .Failure(err)
      }

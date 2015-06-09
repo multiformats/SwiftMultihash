@@ -67,19 +67,13 @@ public struct DecodedMultihash {
         digest  : [uint8]
 }
 
-// Bodge to get around Swift 1.2's inability to deal with multi-payload
-final public class Box<T> {
-    public let unbox: T
-    public init(_ value: T) { self.unbox = value }
-}
-
 // A result can either be a Multihash or an NSError
 public enum Result<T> {
-    case Success(Box<T>)
+    case Success(T)
     case Failure(NSError)
     
-    init(value: T) {
-        self = .Success(Box(value))
+    init(_ value: T) {
+        self = .Success(value)
     }
     
     init(error: NSError) {
@@ -132,11 +126,13 @@ public func cast(buf: [uint8]) -> Result<Multihash> {
     case .Failure(let err):
         return .Failure(err)
     case .Success(let dm):
-        if validCode(dm.unbox.code) == false {
+
+        if validCode(dm.code) == false {
             return .Failure(ErrUnknownCode)
         }
     }
-    return .Success(Box(Multihash(buf)))
+
+    return .Success(Multihash(buf))
 }
 
 public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
@@ -153,7 +149,8 @@ public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
     if dm.digest.count != dm.length {
         return .Failure(ErrInconsistentLen(dm))
     }
-    return .Success(Box(dm))
+
+   return .Success(dm)
 }
 
 /// Encode a hash digest along with the specified function code
@@ -173,7 +170,8 @@ public func encode(buf: [uint8], _ code: Int?) -> Result<[uint8]> {
     pre[0] = uint8(code!)
     pre[1] = uint8(buf.count)
     pre.extend(buf)
-    return .Success(Box(pre))
+
+    return .Success(pre)
 }
 
 public func encodeName(buf: [uint8], _ name: String) -> Result<[uint8]> {
@@ -188,7 +186,7 @@ public func validCode(code: Int?) -> Bool {
             return true
         }
         
-        if let ok = Codes[c] {
+        if let _ = Codes[c] {
             return true
         }
     }
