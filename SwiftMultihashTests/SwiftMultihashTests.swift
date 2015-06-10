@@ -8,6 +8,7 @@
 
 import Cocoa
 import XCTest
+@testable
 import SwiftMultihash
 import SwiftHex
 
@@ -36,16 +37,16 @@ public let testCases = [
 
 public extension TestCase {
 
-    func multihash() -> Result<Multihash> {
+    func multihash() throws -> Multihash {
         if let ob = SwiftHex.decodeString(hex) {
 
             var b: [uint8] = [0,0]
             b[0] = uint8(code)
             b[1] = uint8(ob.count)
             b.extend(ob)
-            return cast(b)
+            return try cast(b)
         } else {
-            return .Failure(ErrHexFail)
+            throw MultihashError.HexConversionFail
         }
         
     }
@@ -67,50 +68,35 @@ class SwiftMultihashTests: XCTestCase {
     
     func testEncode() {
         for tc in testCases {
-            let ob = SwiftHex.decodeString(tc.hex)
-            if ob == nil {
+            guard let ob = SwiftHex.decodeString(tc.hex) else {
                 XCTFail("Hex decodeString failed.")
                 continue
             }
             
             var pre: [uint8] = [0,0]
             pre[0] = uint8(tc.code)
-            pre[1] = uint8(ob!.count)
-            let nb = pre + ob!
-            
-            let encC: [uint8]
-            switch SwiftMultihash.encode(ob!, tc.code) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
-                continue
-            case .Success(let val):
-                encC = val
-            }
-            
-            if encC != nb {
-               XCTFail("Encoded byte mismatch: \(encC) \(nb)")
-            }
-            
-            let encN: [uint8]
-            switch SwiftMultihash.encodeName(ob!, tc.name) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
-                continue
-            case .Success(let val):
-                encN = val
-            }
-            if encN != nb {
-                XCTFail("Encoded byte mismatch: \(encN) \(nb)")
-            }
+            pre[1] = uint8(ob.count)
+            let nb = pre + ob
+            do {
+                let encC: [uint8] = try SwiftMultihash.encodeBuf(ob, code: tc.code)
+                if encC != nb {
+                    XCTFail("Encoded byte mismatch: \(encC) \(nb)")
+                }
 
-            switch tc.multihash() {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
-                continue
-            case .Success(let val):
+                let encN: [uint8] = try SwiftMultihash.encodeName(ob, name: tc.name)
+                if encN != nb {
+                    XCTFail("Encoded byte mismatch: \(encN) \(nb)")
+                }
+                
+                let val = try tc.multihash()
                 if val.value != nb {
                     XCTFail("Multihash func mismatch.")
                 }
+                
+            } catch {
+                let err = error as! MultihashError
+                XCTFail(err.description)
+                continue
             }
         }
         XCTAssert(true, "Pass")
@@ -128,30 +114,29 @@ class SwiftMultihashTests: XCTestCase {
             pre[0] = uint8(tc.code)
             pre[1] = uint8(ob!.count)
             let nb = pre + ob!
-            
-            let dec: DecodedMultihash
-            switch SwiftMultihash.decode(nb) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
+            do {
+                let dec: DecodedMultihash = try SwiftMultihash.decodeBuf(nb)
+                
+                if dec.code != tc.code {
+                    XCTFail("Decoded code mismatch: \(dec.code) \(tc.code)")
+                }
+                
+                if dec.name != tc.name {
+                    XCTFail("Decoded name mismatch: \(dec.name) \(tc.name)")
+                }
+                
+                if dec.length != ob!.count {
+                    XCTFail("Decoded length mismatch: \(dec.length) \(ob!.count)")
+                }
+                
+                if dec.digest != ob! {
+                    XCTFail("Decoded byte mismatch: \(dec.digest) \(ob!)")
+                }
+
+            } catch {
+                let error = error as! MultihashError
+                XCTFail(error.description)
                 continue
-            case .Success(let val):
-                dec = val
-            }
-            
-            if dec.code != tc.code {
-                XCTFail("Decoded code mismatch: \(dec.code) \(tc.code)")
-            }
-            
-            if dec.name != tc.name {
-                XCTFail("Decoded name mismatch: \(dec.name) \(tc.name)")
-            }
-            
-            if dec.length != ob!.count {
-                XCTFail("Decoded length mismatch: \(dec.length) \(ob!.count)")
-            }
-            
-            if dec.digest != ob! {
-                XCTFail("Decoded byte mismatch: \(dec.digest) \(ob!)")
             }
         }
         XCTAssert(true, "Pass")
@@ -171,16 +156,15 @@ class SwiftMultihashTests: XCTestCase {
     func testExampleDecode() {
 
         if let buf = SwiftHex.decodeString("0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33") {
-            switch encodeName(buf, "sha1") {
-            case .Success(let mhbuf):
-                
-                switch decode(mhbuf) {
-                case .Success(let o):
-                    let mhhex = SwiftHex.encodeToString(o.digest)
-                    print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
-                default: break
-                }
-            default: break
+            do {
+                let mhbuf = try encodeName(buf, name: "sha1")
+                let o = try decodeBuf(mhbuf)
+                    
+                let mhhex = SwiftHex.encodeToString(o.digest)
+                print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
+            } catch {
+                let error = error as! MultihashError
+                XCTFail(error.description)
             }
         }
     }
@@ -206,63 +190,62 @@ class SwiftMultihashTests: XCTestCase {
     
     func testCast() {
         for tc in testCases {
-            let ob = SwiftHex.decodeString(tc.hex)
-            if ob == nil {
+            guard let ob = SwiftHex.decodeString(tc.hex) else {
                 XCTFail("Hex.decodeString failed")
                 continue
             }
             
             var pre: [uint8] = [0,0]
             pre[0] = uint8(tc.code)
-            pre[1] = uint8(ob!.count)
-            let nb = pre + ob!
+            pre[1] = uint8(ob.count)
+            let nb = pre + ob
 
-            switch cast(nb) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
+            do {
+                try cast(nb)
+            } catch {
+                let error = error as! MultihashError
+                XCTFail(error.description)
                 continue
-            default: break
+
             }
             
-            switch cast(ob!) {
-            case .Success:
+            do {
+                try cast(ob)
                 XCTFail("Cast failed to detect non-multihash")
                 continue
-            default: break
+            } catch {
             }
         }
     }
     
     func testHex() {
         for tc in testCases {
-            let ob = SwiftHex.decodeString(tc.hex)
-            if ob == nil {
+            guard let ob = SwiftHex.decodeString(tc.hex) else {
                 XCTFail("Hex.decodeString failed")
                 continue
             }
             
             var pre: [uint8] = [0,0]
             pre[0] = uint8(tc.code)
-            pre[1] = uint8(ob!.count)
-            let nb = pre + ob!
+            pre[1] = uint8(ob.count)
+            let nb = pre + ob
             
             let hs = SwiftHex.encodeToString(nb)
-            let mh: Multihash
-            switch fromHexString(hs) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
-                continue
-            case .Success(let val):
-                mh = val
-            }
-            
-            if mh.value != nb {
-                XCTFail("FromHexString failed \(nb) \(mh.value)")
-                continue
-            }
-
-            if mh.hexString() != hs {
-                XCTFail("Multihash.HexString failed \(hs) \(mh.hexString())")
+            do {
+                let mh: Multihash = try fromHexString(hs)
+                
+                if mh.value != nb {
+                    XCTFail("FromHexString failed \(nb) \(mh.value)")
+                    continue
+                }
+                
+                if mh.hexString() != hs {
+                    XCTFail("Multihash.HexString failed \(hs) \(mh.hexString())")
+                    continue
+                }
+            } catch {
+                let error = error as! MultihashError
+                XCTFail(error.description)
                 continue
             }
         }
@@ -270,36 +253,36 @@ class SwiftMultihashTests: XCTestCase {
     
     func testEncodePerformance() {
         let tc = testCases[0]
-        let ob = SwiftHex.decodeString(tc.hex)
-        if ob == nil {
+        guard let ob = SwiftHex.decodeString(tc.hex) else {
             XCTFail("Hex.decodeString failed")
             return
         }
         
         self.measureBlock() {
-
-            SwiftMultihash.encode(ob!, tc.code)
-            
+            do {
+            try SwiftMultihash.encodeBuf(ob, code: tc.code)
+            } catch { }
         }
     }
 
     func testDecodePerformance() {
         let tc = testCases[0]
-        let ob = SwiftHex.decodeString(tc.hex)
-        if ob == nil {
+        guard let ob = SwiftHex.decodeString(tc.hex) else {
             XCTFail("Hex.decodeString failed")
             return
         }
         
         var pre: [uint8] = [0,0]
         pre[0] = uint8(tc.code)
-        pre[1] = uint8(ob!.count)
-        let nb = pre + ob!
+        pre[1] = uint8(ob.count)
+        let nb = pre + ob
         
         self.measureBlock() {
-            
-            SwiftMultihash.decode(nb)
-            
+            do {
+                try SwiftMultihash.decodeBuf(nb)
+            } catch {
+                XCTFail("SwiftMultihash.decodeBuf failed")
+            }
         }
     }
     

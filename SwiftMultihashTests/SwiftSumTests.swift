@@ -8,6 +8,7 @@
 
 import Foundation
 import XCTest
+@testable
 import SwiftMultihash
 
 struct SumTestCase {
@@ -30,46 +31,36 @@ class SwiftSumTests: XCTestCase {
     
     func testSum() {
         for tc in sumTestCases {
-
-            let m1: Multihash
-            switch fromHexString(tc.hex) {
-            case .Failure(let err):
-                XCTFail(err.localizedDescription)
-                continue
-            case .Success(let val):
-                m1 = val
-            }
-            
-            let m2: Multihash
-            switch sum(Array(tc.input.utf8), tc.code, tc.length) {
-            case .Failure(let err):
-                XCTFail("\(tc.code) sum failed. \(err.localizedDescription)")
-                continue
-            case .Success(let val):
-                m2 = val
-            }
-
-            if m1 != m2 {
-                XCTFail("sum failed: \(m1.value) \(m2.value)")
-            }
-            
-            let hexStr = m1.hexString()
-            if hexStr != tc.hex {
-                XCTFail("Hex strings not the same.")
-            }
-            
-            let b58Str = b58String(m1)
-            
-            switch fromB58String(b58Str) {
-            case .Failure(let err):
-                XCTFail("Failed to decode b58.\(err)")
-            case .Success(let val):
-                let m3 = val
-                if m3 != m1 {
-                    XCTFail("b58 failing bytes.")
-                } else if b58Str != b58String(m3) {
-                    XCTFail("b58 failing string.")
+            do {
+                let m1: Multihash = try fromHexString(tc.hex)
+                let m2: Multihash = try sum(Array(tc.input.utf8), tc.code, tc.length)
+                
+                if m1 != m2 {
+                    XCTFail("sum failed: \(m1.value) \(m2.value)")
                 }
+                
+                let hexStr = m1.hexString()
+                if hexStr != tc.hex {
+                    XCTFail("Hex strings not the same.")
+                }
+                
+                let b58Str = b58String(m1)
+                do {
+                    let m3 = try fromB58String(b58Str)
+                    if m3 != m1 {
+                        XCTFail("b58 failing bytes.")
+                    } else if b58Str != b58String(m3) {
+                        XCTFail("b58 failing string.")
+                    }
+                } catch {
+                    let error = error as! MultihashError
+                    XCTFail("Failed to decode b58.\(error.description)")
+                    continue
+                }
+            } catch  {
+                let error = error as! MultihashError
+                XCTFail(error.description)
+                continue
             }
         }
     }
@@ -77,7 +68,9 @@ class SwiftSumTests: XCTestCase {
     func testSumPerformance() {
         let tc = sumTestCases[0]
         self.measureBlock {
-            sum(Array(tc.input.utf8), tc.code, tc.length)
+            do {
+                try sum(Array(tc.input.utf8), tc.code, tc.length)
+            } catch {}
         }
     }
 }

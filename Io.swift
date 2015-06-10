@@ -8,30 +8,45 @@
 /*
     This is the inital port of the golang io wrapper for Multihash.
     It is a direct translation of the go implementation and as such
-    may use some paradigms that are not dogmatic Swift.
+    may use some paradigms that are not idiomatic Swift.
 
     A more Swifty future version would extend NSInputStream and NSOutputStream
     with multihashReader and multihashWriter methods.
 */
 
 import Foundation
-//import SwiftMultihash
 
-public let
-    ErrEOB      = NSError(domain: ErrDomain, code: -7, userInfo: [NSLocalizedDescriptionKey : "Error! End of buffer reached."]),
-    ErrOpFail      = NSError(domain: ErrDomain, code: -7, userInfo: [NSLocalizedDescriptionKey : "Error! Operation failed."])
+enum MultihashIOError : ErrorType {
+    case EndOfBuffer
+    case OperationFailure
+}
+
+// English language error descriptions
+extension MultihashIOError {
+    var description: String {
+        get {
+            switch self {
+            case .EndOfBuffer:
+                return "End of buffer reached."
+            case .OperationFailure:
+                return "Operation failure."
+            }
+        }
+    }
+}
 
 let defaultBufSize = 1024
+
 // Reader is an NSInputStream wrapper that exposes a function 
 // to read a whole multihash and return it.
 public protocol Reader {
-    func readMultihash() -> Result<Multihash>
+    func readMultihash() throws -> Multihash
 }
 
 // Writer is an NSOutputStream wrapper that exposes a function
 // to write a whole multihash.
 public protocol Writer {
-    func writeMultihash(mHash: Multihash) -> NSError?
+    func writeMultihash(mHash: Multihash) throws
 }
 
 public func newReader(reader: NSInputStream) -> Reader {
@@ -51,90 +66,73 @@ public struct MultihashWriter {
 }
 
 extension MultihashReader: Reader {
-    public func read() -> Result<[uint8]> {
+    
+    public func read() throws -> [uint8] {
         
         var readBuf = [uint8](count: defaultBufSize, repeatedValue: 0)
-        let r = inStream.read(&readBuf, maxLength: defaultBufSize)
-        
-        if r <= 0 {
-            return parseReadError(r)
-        }
+        try inStream.readToBuffer(&readBuf, maxLength: defaultBufSize)
 
-//        return Result(value: readBuf)
-        return Result(readBuf)
+        return readBuf
     }
 
-
-    public func readMultihash() -> Result<Multihash> {
+    public func readMultihash() throws -> Multihash {
 
         // Read just the header first.
         var multihashHeader = [uint8](count: 2, repeatedValue: 0)
-        let resultCode = inStream.read(&multihashHeader, maxLength: multihashHeader.count)
-        if resultCode <= 0 {
-            return parseReadError(resultCode)
-        }
+        try inStream.readToBuffer(&multihashHeader, maxLength: multihashHeader.count)
         
         let hashLength = Int(multihashHeader[1])
     
         if hashLength > 127 {
             // return varints not yet supported error
-            return Result(error: ErrEOB)
+            throw MultihashIOError.EndOfBuffer
         }
         
         // Read the rest
         var multiHash = [uint8](count: hashLength, repeatedValue: 0)
-        if inStream.read(&multiHash, maxLength: hashLength) <= 0 {
-            return Result(error: ErrEOB)
-        }
+        try inStream.readToBuffer(&multiHash, maxLength: hashLength)
         
-        return cast(multihashHeader+multiHash)
+        return try cast(multihashHeader+multiHash)
     }
-    
-    func parseReadError<T>(errorCode: Int) -> Result<T> {
+}
+
+extension NSInputStream {
+    func readToBuffer(buffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) throws -> Int {
+        let result = read(buffer, maxLength: len)
         switch true {
-        case errorCode == 0:
-            return Result(error: ErrEOB)
-        case errorCode < 0:
-            return Result(error: ErrOpFail)
+        case result == 0:
+            throw MultihashIOError.EndOfBuffer
+        case result < 0:
+            throw MultihashIOError.OperationFailure
         default:
-            // No error error!
-            return Result(error: ErrUnknownCode)
+            return result
         }
     }
 }
 
 extension MultihashWriter: Writer {
     
-    func write(buffer: [uint8]) -> NSError? {
+    func write(buffer: [uint8]) throws {
         var buf = buffer
-        let resultCode = outStream.write(&buf, maxLength: buf.count)
-        if resultCode < 0 {
-            return parseWriteError(resultCode)
-        }
-        
-        return nil
+        try outStream.writeBuffer(&buf, maxLength: buf.count)
     }
 
-    public func writeMultihash(mHash: Multihash) -> NSError? {
+    public func writeMultihash(mHash: Multihash) throws {
         var hashBuf = mHash.value
-        let resultCode = outStream.write(&hashBuf, maxLength: hashBuf.count)
-        if resultCode < 0 {
-            return parseWriteError(resultCode)
-        }
-        
-        return nil
+        try outStream.writeBuffer(&hashBuf, maxLength: hashBuf.count)
     }
-    
-    func parseWriteError(errorCode: Int) -> NSError? {
-        switch true {
-        case errorCode == 0:
-            return ErrEOB
-        case errorCode < 0:
-            return ErrOpFail
-        default:
-            // No error error!
-            return nil
-        }
-    }
+}
 
+extension NSOutputStream {
+    func writeBuffer(buffer: UnsafePointer<UInt8>, maxLength len: Int) throws -> Int {
+        let result = write(buffer, maxLength: len)
+        switch true {
+        case result == 0:
+            throw MultihashIOError.EndOfBuffer
+        case result < 0:
+            throw MultihashIOError.OperationFailure
+        default:
+            return result
+        }
+    }
 }

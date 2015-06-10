@@ -10,14 +10,36 @@ import Foundation
 //import CryptoSwift
 import CommonCrypto
 
-func sumError(code: Int, msg: String) -> NSError {
-    return NSError(domain: ErrDomain, code: code, userInfo: [NSLocalizedDescriptionKey : msg])
+enum MultihashSumError : ErrorType {
+    case InvalidMultihash(Int)
+    case NotImplemented
+    case NoDefaultLength(Int)
 }
 
-public func sum(data: [uint8], _ code: Int, _ length: Int) -> Result<Multihash> {
+// English language error descriptions
+extension MultihashSumError {
+    var description: String {
+        get {
+            switch self {
+            case .InvalidMultihash(let code):
+                return "Invalid multihash code \(code)"
+            case .NotImplemented:
+                return "Function not implemented. Complain to lib maintainer."
+            case .NoDefaultLength(let code):
+                return "No default length for code \(code)"
+            }
+        }
+    }
+}
+
+//func sumError(code: Int, msg: String) -> NSError {
+//    return NSError(domain: ErrDomain, code: code, userInfo: [NSLocalizedDescriptionKey : msg])
+//}
+
+public func sum(data: [uint8], _ code: Int, _ length: Int) throws -> Multihash {
     
     if validCode(code) == false {
-        return .Failure(sumError(-8, msg: "Invalid multihash code \(code)"))
+        throw MultihashSumError.InvalidMultihash(code)
     }
     
     var sumData: [uint8]
@@ -29,27 +51,21 @@ public func sum(data: [uint8], _ code: Int, _ length: Int) -> Result<Multihash> 
     case SHA2_512:
         sumData = sumSHA512(data)
     default:
-        return .Failure(sumError(-7, msg: "Function not implemented. Complain to lib maintainer."))
+        throw MultihashSumError.NotImplemented
     }
 
-    var len = length
+    var len: Int = length
     
-    if len < 0 {
-        let dLen = DefaultLengths[code]
-        if dLen == nil { return .Failure(sumError(-9, msg: "No default length for code \(code)")) }
-        len = dLen!
+    if length < 0 {
+        guard let l = DefaultLengths[code] else {
+            throw MultihashSumError.NoDefaultLength(code)
+        }
+        len = l
     }
     
     let bytes: [uint8] = Array(sumData[0..<len])
 
-    let result = SwiftMultihash.encode(bytes,code)
-    switch result {
-    case .Success(let encBytes):
-//        return .Success(Box(Multihash(encBytes.unbox)))
-        return .Success(Multihash(encBytes))
-    case .Failure(let err):
-        return .Failure(err)
-     }
+    return Multihash(try SwiftMultihash.encodeBuf(bytes,code: code))
 }
 
 func sumSHA1(data: [uint8]) -> [uint8] {

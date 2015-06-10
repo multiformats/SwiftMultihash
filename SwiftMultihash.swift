@@ -10,21 +10,38 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
-//FIXME: look into making these an enum
-/// Errors
-let ErrDomain = "MultiHashDomain"
-public let
-ErrUnknownCode      = NSError(domain: ErrDomain, code: -1, userInfo: [NSLocalizedDescriptionKey : "Unknown multihash code"]),
-ErrTooShort         = NSError(domain: ErrDomain, code: -2, userInfo: [NSLocalizedDescriptionKey : "Multihash too short. Must be > 3 bytes"]),
-ErrTooLong          = NSError(domain: ErrDomain, code: -3, userInfo: [NSLocalizedDescriptionKey : "Multihash too long. Must be < 129 bytes"]),
-ErrLenNotSupported  = NSError(domain: ErrDomain, code: -4, userInfo: [NSLocalizedDescriptionKey : "Multihash does not yet support digests longer than 127 bytes"]),
-ErrHexFail  = NSError(domain: ErrDomain, code: -5, userInfo: [NSLocalizedDescriptionKey : "Error occurred in hex conversion."])
-
-func ErrInconsistentLen(dm: DecodedMultihash) -> NSError {
-        return NSError(domain: ErrDomain, code: -6, userInfo: [NSLocalizedDescriptionKey : "Multihash length inconsistent: \(dm)"])
+enum MultihashError : ErrorType {
+    case UnknownCode
+    case HashTooShort
+    case HashTooLong
+    case LengthNotSupported
+    case HexConversionFail
+    case InconsistentLength(Int)
 }
 
-public let
+// English language error strings.
+extension MultihashError {
+    var description: String {
+        get {
+            switch self {
+            case .UnknownCode:
+                return "Unknown multihash code."
+            case HashTooShort:
+                return "Multihash too short. Must be > 3 bytes"
+            case HashTooLong:
+                return "Multihash too long. Must be < 129 bytes"
+            case LengthNotSupported:
+                return "Multihash does not yet support digests longer than 127 bytes"
+            case HexConversionFail:
+                return "Error occurred in hex conversion."
+            case InconsistentLength(let len):
+                return "Multihash length inconsistent. \(len)"
+            }
+        }
+    }
+}
+
+let
 SHA1        = 0x11,
 SHA2_256    = 0x12,
 SHA2_512    = 0x13,
@@ -32,7 +49,7 @@ SHA3        = 0x14,
 BLAKE2B     = 0x40,
 BLAKE2S     = 0x41
 
-public let Names: [String : Int] = [
+let Names: [String : Int] = [
     "sha1"      : SHA1,
     "sha2-256"  : SHA2_256,
     "sha2-512"  : SHA2_512,
@@ -41,7 +58,7 @@ public let Names: [String : Int] = [
     "blake2s"   : BLAKE2S
 ]
 
-public let Codes: [Int : String] = [
+let Codes: [Int : String] = [
     SHA1        : "sha1",
     SHA2_256    : "sha2-256",
     SHA2_512    : "sha2-512",
@@ -67,20 +84,6 @@ public struct DecodedMultihash {
         digest  : [uint8]
 }
 
-// A result can either be a Multihash or an NSError
-public enum Result<T> {
-    case Success(T)
-    case Failure(NSError)
-    
-    init(_ value: T) {
-        self = .Success(value)
-    }
-    
-    init(error: NSError) {
-        self = .Failure(error)
-    }
-}
-
 public struct Multihash {
     public let value: [uint8]
     
@@ -103,11 +106,13 @@ public func ==(lhs: Multihash, rhs: Multihash) -> Bool {
     return lhs.value == rhs.value
 }
 
-public func fromHexString(theString: String) -> Result<Multihash> {
-    if let buf = SwiftHex.decodeString(theString) {
-        return cast(buf)
+public func fromHexString(theString: String) throws -> Multihash {
+    
+    guard let buf = SwiftHex.decodeString(theString) else {
+        throw MultihashError.HexConversionFail
     }
-    return .Failure(ErrHexFail)
+    
+    return try cast(buf)
 }
 
 public func b58String(mhash: Multihash) -> String {
@@ -115,54 +120,48 @@ public func b58String(mhash: Multihash) -> String {
 }
 
 
-public func fromB58String(str: String) -> Result<Multihash> {
+public func fromB58String(str: String) throws -> Multihash {
     let decodedBytes = SwiftBase58.decode(str)
-    return cast(decodedBytes)
+    return try cast(decodedBytes)
 }
 
-public func cast(buf: [uint8]) -> Result<Multihash> {
-    let result = decode(buf)
-    switch result {
-    case .Failure(let err):
-        return .Failure(err)
-    case .Success(let dm):
+public func cast(buf: [uint8]) throws -> Multihash {
+    let dm = try decodeBuf(buf)
 
-        if validCode(dm.code) == false {
-            return .Failure(ErrUnknownCode)
-        }
+    if validCode(dm.code) == false {
+        throw MultihashError.UnknownCode
     }
 
-    return .Success(Multihash(buf))
+    return Multihash(buf)
 }
 
-public func decode(buf: [uint8]) -> Result<DecodedMultihash> {
+public func decodeBuf(buf: [uint8]) throws -> DecodedMultihash {
     
     if buf.count < 3 {
-        return .Failure(ErrTooShort)
+        throw MultihashError.HashTooShort
     }
     if buf.count > 129 {
-        return .Failure(ErrTooLong)
+        throw MultihashError.HashTooLong
     }
 
     let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
     
     if dm.digest.count != dm.length {
-        return .Failure(ErrInconsistentLen(dm))
+        throw MultihashError.InconsistentLength(dm.length)
     }
 
-   return .Success(dm)
+   return dm
 }
 
 /// Encode a hash digest along with the specified function code
 /// Note: The length is derived from the length of the digest.
-//public func encode(buf: [uint8], code: Int?) -> ([uint8]?, NSError?) {
-public func encode(buf: [uint8], _ code: Int?) -> Result<[uint8]> {
+public func encodeBuf(buf: [uint8], code: Int?) throws -> [uint8] {
     if validCode(code) == false {
-        return .Failure(ErrUnknownCode)
+        throw MultihashError.UnknownCode
     }
     
     if buf.count > 129 {
-        return .Failure(ErrTooLong)
+        throw MultihashError.HashTooLong
     }
     
     var pre = [0,0] as [uint8]
@@ -171,11 +170,11 @@ public func encode(buf: [uint8], _ code: Int?) -> Result<[uint8]> {
     pre[1] = uint8(buf.count)
     pre.extend(buf)
 
-    return .Success(pre)
+    return pre
 }
 
-public func encodeName(buf: [uint8], _ name: String) -> Result<[uint8]> {
-    return encode(buf, Names[name])
+public func encodeName(buf: [uint8], name: String) throws -> [uint8] {
+    return try encodeBuf(buf, code: Names[name])
 }
 
 /// ValidCode checks whether a multihash code is valid.
