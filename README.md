@@ -28,6 +28,8 @@ which build to do you will have to do the following:
  For more information on how to install via Carthage see the [README][carthage-installation]
 
  [carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
+## Requirements
+ Swift 2
 
 ## Usage
  
