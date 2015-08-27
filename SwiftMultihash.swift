@@ -168,7 +168,7 @@ public func encodeBuf(buf: [uint8], code: Int?) throws -> [uint8] {
     
     pre[0] = uint8(code!)
     pre[1] = uint8(buf.count)
-    pre.extend(buf)
+    pre.appendContentsOf(buf)
 
     return pre
 }

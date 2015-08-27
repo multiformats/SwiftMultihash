@@ -43,7 +43,7 @@ public extension TestCase {
             var b: [uint8] = [0,0]
             b[0] = uint8(code)
             b[1] = uint8(ob.count)
-            b.extend(ob)
+            b.appendContentsOf(ob)
             return try cast(b)
         } else {
             throw MultihashError.HexConversionFail
