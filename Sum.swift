@@ -3,11 +3,10 @@
 //  SwiftMultihash
 //
 //  Created by Matteo Sartori on 30/05/15.
-//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
+//  Licensed under MIT See LICENCE for details 
 //
 
 import Foundation
-//import CryptoSwift
 import CommonCrypto
 
 enum MultihashSumError : ErrorType {

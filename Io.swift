@@ -3,7 +3,7 @@
 //  SwiftMultihash
 //
 //  Created by Matteo Sartori on 01/06/15.
-//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
+//  Licensed under MIT See LICENCE for details
 //
 /*
     This is the inital port of the golang io wrapper for Multihash.

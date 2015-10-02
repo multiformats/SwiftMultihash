@@ -3,7 +3,7 @@
 //  SwiftMultihash
 //
 //  Created by Matteo Sartori on 04/06/15.
-//  Copyright (c) 2015 Matteo Sartori. All rights reserved.
+//  Licensed under MIT See LICENCE for details
 //
 
 import Foundation

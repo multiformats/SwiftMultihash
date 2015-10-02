@@ -10,6 +10,10 @@ github "NeoTeo/SwiftMultihash"
 Then, in the root of your project, type:
 `carthage update`
 
+##### If you get the error 'Project "VarInt.xcodeproj" has no shared schemes'
+Make sure your scheme is marked shared. For more details see [here](https://github.com/Carthage/Carthage)
+
+
 If you need the Multihash Sum functions:
 Because the CryptoSwift project defaults to building for iOS and I haven't figured out how to tell Carthage to tell Xcode 
 which build to do you will have to do the following:
@@ -20,9 +24,12 @@ which build to do you will have to do the following:
 
 ##### You will then need to add SwiftMultihash.framework to your Xcode project:
 
-- Select your target's General tab.
+- Select your target's `Build Phases` tab.
 
-- Add SwiftMultihash.framework, SwiftBase58.framework and SwiftHex.framework from the Carthage/Build/Mac directory in your project root, either by dropping them directly onto the "Embedded Binaries" or by clicking the + and navigating to them.  
+- Select the Link Binary With Libraries, click the `1` and then `Add Other...` buttons.
+
+- Navigate to the Carthage/Build/Mac directory in your project root and select the SwiftMultihash.framework, SwiftBase58.framework and SwiftHex.framework.  
+
  - In case of a code signing error, select the target's Build Settings tab make sure the "Code Signing Identity" is either a valid identity or "Don't Code Sign".
 
  For more information on how to install via Carthage see the [README][carthage-installation]
