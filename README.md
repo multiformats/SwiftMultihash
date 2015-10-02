@@ -26,7 +26,7 @@ which build to do you will have to do the following:
 
 - Select your target's `Build Phases` tab.
 
-- Select the Link Binary With Libraries, click the `+` and then `Add Other...` buttons.
+- Select the `Link Binary With Libraries`, click the `+` and then `Add Other...` buttons.
 
 - Navigate to the Carthage/Build/Mac directory in your project root and select the SwiftMultihash.framework, SwiftBase58.framework and SwiftHex.framework.  
 
