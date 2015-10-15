@@ -5,3 +5,5 @@ Build
 *.xcuserstate
 *.xccheckout
 xcuserdata
+Carthage
+Cartfile.resolved

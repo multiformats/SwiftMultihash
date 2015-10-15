@@ -108,9 +108,7 @@ public func ==(lhs: Multihash, rhs: Multihash) -> Bool {
 
 public func fromHexString(theString: String) throws -> Multihash {
     
-    guard let buf = SwiftHex.decodeString(theString) else {
-        throw MultihashError.HexConversionFail
-    }
+    let buf = try SwiftHex.decodeString(theString) 
     
     return try cast(buf)
 }
