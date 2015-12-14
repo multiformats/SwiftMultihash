@@ -35,13 +35,13 @@ extension MultihashSumError {
 //    return NSError(domain: ErrDomain, code: code, userInfo: [NSLocalizedDescriptionKey : msg])
 //}
 
-public func sum(data: [uint8], _ code: Int, _ length: Int) throws -> Multihash {
+public func sum(data: [UInt8], _ code: Int, _ length: Int) throws -> Multihash {
     
     if validCode(code) == false {
         throw MultihashSumError.InvalidMultihash(code)
     }
     
-    var sumData: [uint8]
+    var sumData: [UInt8]
     switch code {
     case SHA1:
         sumData = sumSHA1(data)
@@ -62,35 +62,35 @@ public func sum(data: [uint8], _ code: Int, _ length: Int) throws -> Multihash {
         len = l
     }
     
-    let bytes: [uint8] = Array(sumData[0..<len])
+    let bytes: [UInt8] = Array(sumData[0..<len])
 
     return Multihash(try SwiftMultihash.encodeBuf(bytes,code: code))
 }
 
-func sumSHA1(data: [uint8]) -> [uint8] {
+func sumSHA1(data: [UInt8]) -> [UInt8] {
 
     let len = Int(CC_SHA1_DIGEST_LENGTH)
-    var digest = [uint8](count: len, repeatedValue: 0)
+    var digest = [UInt8](count: len, repeatedValue: 0)
     
     CC_SHA1(data, CC_LONG(data.count), &digest)
     
     return Array(digest[0..<len])
 }
 
-func sumSHA256(data: [uint8]) -> [uint8] {
+func sumSHA256(data: [UInt8]) -> [UInt8] {
     
     let len = Int(CC_SHA256_DIGEST_LENGTH)
-    var digest = [uint8](count: len, repeatedValue: 0)
+    var digest = [UInt8](count: len, repeatedValue: 0)
     
     CC_SHA256(data, CC_LONG(data.count), &digest)
     
     return Array(digest[0..<len])
 }
 
-func sumSHA512(data: [uint8]) -> [uint8] {
+func sumSHA512(data: [UInt8]) -> [UInt8] {
     
     let len = Int(CC_SHA512_DIGEST_LENGTH)
-    var digest = [uint8](count: len, repeatedValue: 0)
+    var digest = [UInt8](count: len, repeatedValue: 0)
     
     CC_SHA512(data, CC_LONG(data.count), &digest)
     
@@ -98,7 +98,7 @@ func sumSHA512(data: [uint8]) -> [uint8] {
 }
 
 // No SHA3 Swift lib yet?
-//func sumSHA3(data: [uint8]) -> [uint8] {
+//func sumSHA3(data: [UInt8]) -> [UInt8] {
 //    let dat = NSData(bytes: data, length: data.count)
 //
 //    if let bytes = dat. no sha3  ?.arrayOfBytes() {

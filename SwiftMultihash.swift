@@ -81,13 +81,13 @@ public struct DecodedMultihash {
         code    : Int,
         name    : String?,
         length  : Int,
-        digest  : [uint8]
+        digest  : [UInt8]
 }
 
 public struct Multihash {
-    public let value: [uint8]
+    public let value: [UInt8]
     
-    public init(_ val: [uint8]) {
+    public init(_ val: [UInt8]) {
         self.value = val
     }
 }
@@ -123,7 +123,7 @@ public func fromB58String(str: String) throws -> Multihash {
     return try cast(decodedBytes)
 }
 
-public func cast(buf: [uint8]) throws -> Multihash {
+public func cast(buf: [UInt8]) throws -> Multihash {
     let dm = try decodeBuf(buf)
 
     if validCode(dm.code) == false {
@@ -133,7 +133,7 @@ public func cast(buf: [uint8]) throws -> Multihash {
     return Multihash(buf)
 }
 
-public func decodeBuf(buf: [uint8]) throws -> DecodedMultihash {
+public func decodeBuf(buf: [UInt8]) throws -> DecodedMultihash {
     
     if buf.count < 3 {
         throw MultihashError.HashTooShort
@@ -153,7 +153,7 @@ public func decodeBuf(buf: [uint8]) throws -> DecodedMultihash {
 
 /// Encode a hash digest along with the specified function code
 /// Note: The length is derived from the length of the digest.
-public func encodeBuf(buf: [uint8], code: Int?) throws -> [uint8] {
+public func encodeBuf(buf: [UInt8], code: Int?) throws -> [UInt8] {
     if validCode(code) == false {
         throw MultihashError.UnknownCode
     }
@@ -162,16 +162,16 @@ public func encodeBuf(buf: [uint8], code: Int?) throws -> [uint8] {
         throw MultihashError.HashTooLong
     }
     
-    var pre = [0,0] as [uint8]
+    var pre = [0,0] as [UInt8]
     
-    pre[0] = uint8(code!)
-    pre[1] = uint8(buf.count)
+    pre[0] = UInt8(code!)
+    pre[1] = UInt8(buf.count)
     pre.appendContentsOf(buf)
 
     return pre
 }
 
-public func encodeName(buf: [uint8], name: String) throws -> [uint8] {
+public func encodeName(buf: [UInt8], name: String) throws -> [UInt8] {
     return try encodeBuf(buf, code: Names[name])
 }
 

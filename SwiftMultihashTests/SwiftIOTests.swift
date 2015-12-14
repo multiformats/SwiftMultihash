@@ -16,7 +16,7 @@ class SwiftIOTests: XCTestCase {
     func testReader() {
         
         let cap = 1024
-        var buf = [uint8](count: cap, repeatedValue: 0)
+        var buf = [UInt8](count: cap, repeatedValue: 0)
         let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         // Set up an NSStream we can write to and read from.
@@ -58,7 +58,7 @@ class SwiftIOTests: XCTestCase {
     func testWriter() {
         
         let cap = 1024
-        var buf = [uint8](count: cap, repeatedValue: 0)
+        var buf = [UInt8](count: cap, repeatedValue: 0)
         let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         
@@ -69,7 +69,7 @@ class SwiftIOTests: XCTestCase {
                 let testMultihash = try tc.multihash()
                 try writer.writeMultihash(testMultihash)
                 
-                var storedMultihash = [uint8](count: testMultihash.value.count, repeatedValue: 0)
+                var storedMultihash = [UInt8](count: testMultihash.value.count, repeatedValue: 0)
                 let inStream = NSInputStream(data: NSData(bytes: testMultihash.value, length: testMultihash.value.count))
                 inStream.open()
                 
