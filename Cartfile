@@ -1,2 +1,2 @@
-github "NeoTeo/SwiftHex"
-github "NeoTeo/SwiftBase58"
+github "NeoTeo/SwiftHex" == v0.2.5
+github "NeoTeo/SwiftBase58" == v0.4.0

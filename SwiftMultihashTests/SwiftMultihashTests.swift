@@ -6,7 +6,7 @@
 //  Licensed under MIT See LICENCE for details 
 //
 
-import Cocoa
+//import Cocoa
 import XCTest
 @testable
 import SwiftMultihash
@@ -40,9 +40,9 @@ public extension TestCase {
     func multihash() throws -> Multihash {
         let ob = try SwiftHex.decodeString(hex)
         
-        var b: [uint8] = [0,0]
-        b[0] = uint8(code)
-        b[1] = uint8(ob.count)
+        var b: [UInt8] = [0,0]
+        b[0] = UInt8(code)
+        b[1] = UInt8(ob.count)
         b.appendContentsOf(ob)
         return try cast(b)
         
@@ -68,17 +68,17 @@ class SwiftMultihashTests: XCTestCase {
             for tc in testCases {
                 let ob = try SwiftHex.decodeString(tc.hex)
                 
-                var pre: [uint8] = [0,0]
-                pre[0] = uint8(tc.code)
-                pre[1] = uint8(ob.count)
+                var pre: [UInt8] = [0,0]
+                pre[0] = UInt8(tc.code)
+                pre[1] = UInt8(ob.count)
                 let nb = pre + ob
                 do {
-                    let encC: [uint8] = try SwiftMultihash.encodeBuf(ob, code: tc.code)
+                    let encC: [UInt8] = try SwiftMultihash.encodeBuf(ob, code: tc.code)
                     if encC != nb {
                         XCTFail("Encoded byte mismatch: \(encC) \(nb)")
                     }
 
-                    let encN: [uint8] = try SwiftMultihash.encodeName(ob, name: tc.name)
+                    let encN: [UInt8] = try SwiftMultihash.encodeName(ob, name: tc.name)
                     if encN != nb {
                         XCTFail("Encoded byte mismatch: \(encN) \(nb)")
                     }
@@ -104,9 +104,9 @@ class SwiftMultihashTests: XCTestCase {
         for tc in testCases {
             let ob = try SwiftHex.decodeString(tc.hex)
             
-            var pre: [uint8] = [0,0]
-            pre[0] = uint8(tc.code)
-            pre[1] = uint8(ob.count)
+            var pre: [UInt8] = [0,0]
+            pre[0] = UInt8(tc.code)
+            pre[1] = UInt8(ob.count)
             let nb = pre + ob
             do {
                 let dec: DecodedMultihash = try SwiftMultihash.decodeBuf(nb)
@@ -190,9 +190,9 @@ class SwiftMultihashTests: XCTestCase {
                 let ob = try SwiftHex.decodeString(tc.hex)
                 
                 
-                var pre: [uint8] = [0,0]
-                pre[0] = uint8(tc.code)
-                pre[1] = uint8(ob.count)
+                var pre: [UInt8] = [0,0]
+                pre[0] = UInt8(tc.code)
+                pre[1] = UInt8(ob.count)
                 let nb = pre + ob
 
                 do {
@@ -221,9 +221,9 @@ class SwiftMultihashTests: XCTestCase {
             for tc in testCases {
                 let ob = try SwiftHex.decodeString(tc.hex)
                 
-                var pre: [uint8] = [0,0]
-                pre[0] = uint8(tc.code)
-                pre[1] = uint8(ob.count)
+                var pre: [UInt8] = [0,0]
+                pre[0] = UInt8(tc.code)
+                pre[1] = UInt8(ob.count)
                 let nb = pre + ob
                 
                 let hs = SwiftHex.encodeToString(nb)
@@ -270,9 +270,9 @@ class SwiftMultihashTests: XCTestCase {
         do {
             let ob = try SwiftHex.decodeString(tc.hex)
             
-            var pre: [uint8] = [0,0]
-            pre[0] = uint8(tc.code)
-            pre[1] = uint8(ob.count)
+            var pre: [UInt8] = [0,0]
+            pre[0] = UInt8(tc.code)
+            pre[1] = UInt8(ob.count)
             let nb = pre + ob
             
             self.measureBlock() {

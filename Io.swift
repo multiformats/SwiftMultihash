@@ -67,9 +67,9 @@ public struct MultihashWriter {
 
 extension MultihashReader: Reader {
     
-    public func read() throws -> [uint8] {
+    public func read() throws -> [UInt8] {
         
-        var readBuf = [uint8](count: defaultBufSize, repeatedValue: 0)
+        var readBuf = [UInt8](count: defaultBufSize, repeatedValue: 0)
         try inStream.readToBuffer(&readBuf, maxLength: defaultBufSize)
 
         return readBuf
@@ -78,7 +78,7 @@ extension MultihashReader: Reader {
     public func readMultihash() throws -> Multihash {
 
         // Read just the header first.
-        var multihashHeader = [uint8](count: 2, repeatedValue: 0)
+        var multihashHeader = [UInt8](count: 2, repeatedValue: 0)
         try inStream.readToBuffer(&multihashHeader, maxLength: multihashHeader.count)
         
         let hashLength = Int(multihashHeader[1])
@@ -89,7 +89,7 @@ extension MultihashReader: Reader {
         }
         
         // Read the rest
-        var multiHash = [uint8](count: hashLength, repeatedValue: 0)
+        var multiHash = [UInt8](count: hashLength, repeatedValue: 0)
         try inStream.readToBuffer(&multiHash, maxLength: hashLength)
         
         return try cast(multihashHeader+multiHash)
@@ -112,7 +112,7 @@ extension NSInputStream {
 
 extension MultihashWriter: Writer {
     
-    func write(buffer: [uint8]) throws {
+    func write(buffer: [UInt8]) throws {
         var buf = buffer
         try outStream.writeBuffer(&buf, maxLength: buf.count)
     }
