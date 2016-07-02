@@ -38,12 +38,12 @@ public let testCases = [
 public extension TestCase {
 
     func multihash() throws -> Multihash {
-        let ob = try SwiftHex.decodeString(hex)
+        let ob = try SwiftHex.decodeString(hexString: hex)
         
         var b: [UInt8] = [0,0]
         b[0] = UInt8(code)
         b[1] = UInt8(ob.count)
-        b.appendContentsOf(ob)
+        b.append(contentsOf: ob)
         return try cast(b)
         
     }
@@ -66,7 +66,7 @@ class SwiftMultihashTests: XCTestCase {
     func testEncode() {
         do {
             for tc in testCases {
-                let ob = try SwiftHex.decodeString(tc.hex)
+                let ob = try SwiftHex.decodeString(hexString: tc.hex)
                 
                 var pre: [UInt8] = [0,0]
                 pre[0] = UInt8(tc.code)
@@ -102,7 +102,7 @@ class SwiftMultihashTests: XCTestCase {
     func testDecode() {
         do {
         for tc in testCases {
-            let ob = try SwiftHex.decodeString(tc.hex)
+            let ob = try SwiftHex.decodeString(hexString: tc.hex)
             
             var pre: [UInt8] = [0,0]
             pre[0] = UInt8(tc.code)
@@ -151,12 +151,12 @@ class SwiftMultihashTests: XCTestCase {
     
     func testExampleDecode() {
         do {
-            let buf = try SwiftHex.decodeString("0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33")
+            let buf = try SwiftHex.decodeString(hexString: "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33")
 
             let mhbuf = try encodeName(buf, name: "sha1")
             let o = try decodeBuf(mhbuf)
                 
-            let mhhex = SwiftHex.encodeToString(o.digest)
+            let mhhex = SwiftHex.encodeToString(hexBytes: o.digest)
             print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
         } catch {
             let error = error as! MultihashError
@@ -187,7 +187,7 @@ class SwiftMultihashTests: XCTestCase {
         do {
             for tc in testCases {
 
-                let ob = try SwiftHex.decodeString(tc.hex)
+                let ob = try SwiftHex.decodeString(hexString: tc.hex)
                 
                 
                 var pre: [UInt8] = [0,0]
@@ -196,7 +196,7 @@ class SwiftMultihashTests: XCTestCase {
                 let nb = pre + ob
 
                 do {
-                    try cast(nb)
+                    try _ = cast(nb)
                 } catch {
                     let error = error as! MultihashError
                     XCTFail(error.description)
@@ -205,7 +205,7 @@ class SwiftMultihashTests: XCTestCase {
                 }
                 
                 do {
-                    try cast(ob)
+                    try _ = cast(ob)
                     XCTFail("Cast failed to detect non-multihash")
                     continue
                 } catch {
@@ -219,14 +219,14 @@ class SwiftMultihashTests: XCTestCase {
     func testHex() {
         do {
             for tc in testCases {
-                let ob = try SwiftHex.decodeString(tc.hex)
+                let ob = try SwiftHex.decodeString(hexString: tc.hex)
                 
                 var pre: [UInt8] = [0,0]
                 pre[0] = UInt8(tc.code)
                 pre[1] = UInt8(ob.count)
                 let nb = pre + ob
                 
-                let hs = SwiftHex.encodeToString(nb)
+                let hs = SwiftHex.encodeToString(hexBytes: nb)
                 do {
                     let mh: Multihash = try fromHexString(hs)
                     
@@ -254,10 +254,10 @@ class SwiftMultihashTests: XCTestCase {
         
         let tc = testCases[0]
         do {
-            let ob = try SwiftHex.decodeString(tc.hex)
+            let ob = try SwiftHex.decodeString(hexString: tc.hex)
         
-            self.measureBlock() {
-                do { try SwiftMultihash.encodeBuf(ob, code: tc.code) }
+            self.measure() {
+                do { try _ = SwiftMultihash.encodeBuf(ob, code: tc.code) }
                 catch {}
             }
         } catch {
@@ -268,16 +268,16 @@ class SwiftMultihashTests: XCTestCase {
     func testDecodePerformance() {
         let tc = testCases[0]
         do {
-            let ob = try SwiftHex.decodeString(tc.hex)
+            let ob = try SwiftHex.decodeString(hexString: tc.hex)
             
             var pre: [UInt8] = [0,0]
             pre[0] = UInt8(tc.code)
             pre[1] = UInt8(ob.count)
             let nb = pre + ob
             
-            self.measureBlock() {
+            self.measure() {
                 do {
-                    try SwiftMultihash.decodeBuf(nb)
+                    try _ = SwiftMultihash.decodeBuf(nb)
                 } catch {
                     XCTFail("SwiftMultihash.decodeBuf failed")
                 }

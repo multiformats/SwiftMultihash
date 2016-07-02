@@ -67,9 +67,9 @@ class SwiftSumTests: XCTestCase {
     
     func testSumPerformance() {
         let tc = sumTestCases[0]
-        self.measureBlock {
+        self.measure {
             do {
-                try sum(Array(tc.input.utf8), tc.code, tc.length)
+                try _ = sum(Array(tc.input.utf8), tc.code, tc.length)
             } catch {}
         }
     }

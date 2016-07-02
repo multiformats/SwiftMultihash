@@ -10,13 +10,13 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
-enum MultihashError : ErrorType {
-    case UnknownCode
-    case HashTooShort
-    case HashTooLong
-    case LengthNotSupported
-    case HexConversionFail
-    case InconsistentLength(Int)
+enum MultihashError : ErrorProtocol {
+    case unknownCode
+    case hashTooShort
+    case hashTooLong
+    case lengthNotSupported
+    case hexConversionFail
+    case inconsistentLength(Int)
 }
 
 // English language error strings.
@@ -24,17 +24,17 @@ extension MultihashError {
     var description: String {
         get {
             switch self {
-            case .UnknownCode:
+            case .unknownCode:
                 return "Unknown multihash code."
-            case HashTooShort:
+            case hashTooShort:
                 return "Multihash too short. Must be > 3 bytes"
-            case HashTooLong:
+            case hashTooLong:
                 return "Multihash too long. Must be < 129 bytes"
-            case LengthNotSupported:
+            case lengthNotSupported:
                 return "Multihash does not yet support digests longer than 127 bytes"
-            case HexConversionFail:
+            case hexConversionFail:
                 return "Error occurred in hex conversion."
-            case InconsistentLength(let len):
+            case inconsistentLength(let len):
                 return "Multihash length inconsistent. \(len)"
             }
         }
@@ -94,7 +94,7 @@ public struct Multihash {
 
 extension Multihash : Equatable {
     public func hexString() -> String {
-        return SwiftHex.encodeToString(value)
+        return SwiftHex.encodeToString(hexBytes: value)
     }
     
     public func string() -> String {
@@ -106,46 +106,46 @@ public func ==(lhs: Multihash, rhs: Multihash) -> Bool {
     return lhs.value == rhs.value
 }
 
-public func fromHexString(theString: String) throws -> Multihash {
+public func fromHexString(_ theString: String) throws -> Multihash {
     
-    let buf = try SwiftHex.decodeString(theString) 
+    let buf = try SwiftHex.decodeString(hexString: theString) 
     
     return try cast(buf)
 }
 
-public func b58String(mhash: Multihash) -> String {
+public func b58String(_ mhash: Multihash) -> String {
     return SwiftBase58.encode(mhash.value)
 }
 
 
-public func fromB58String(str: String) throws -> Multihash {
+public func fromB58String(_ str: String) throws -> Multihash {
     let decodedBytes = SwiftBase58.decode(str)
     return try cast(decodedBytes)
 }
 
-public func cast(buf: [UInt8]) throws -> Multihash {
+public func cast(_ buf: [UInt8]) throws -> Multihash {
     let dm = try decodeBuf(buf)
 
     if validCode(dm.code) == false {
-        throw MultihashError.UnknownCode
+        throw MultihashError.unknownCode
     }
 
     return Multihash(buf)
 }
 
-public func decodeBuf(buf: [UInt8]) throws -> DecodedMultihash {
+public func decodeBuf(_ buf: [UInt8]) throws -> DecodedMultihash {
     
     if buf.count < 3 {
-        throw MultihashError.HashTooShort
+        throw MultihashError.hashTooShort
     }
     if buf.count > 129 {
-        throw MultihashError.HashTooLong
+        throw MultihashError.hashTooLong
     }
 
     let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
     
     if dm.digest.count != dm.length {
-        throw MultihashError.InconsistentLength(dm.length)
+        throw MultihashError.inconsistentLength(dm.length)
     }
 
    return dm
@@ -153,30 +153,30 @@ public func decodeBuf(buf: [UInt8]) throws -> DecodedMultihash {
 
 /// Encode a hash digest along with the specified function code
 /// Note: The length is derived from the length of the digest.
-public func encodeBuf(buf: [UInt8], code: Int?) throws -> [UInt8] {
+public func encodeBuf(_ buf: [UInt8], code: Int?) throws -> [UInt8] {
     if validCode(code) == false {
-        throw MultihashError.UnknownCode
+        throw MultihashError.unknownCode
     }
     
     if buf.count > 129 {
-        throw MultihashError.HashTooLong
+        throw MultihashError.hashTooLong
     }
     
     var pre = [0,0] as [UInt8]
     
     pre[0] = UInt8(code!)
     pre[1] = UInt8(buf.count)
-    pre.appendContentsOf(buf)
+    pre.append(contentsOf: buf)
 
     return pre
 }
 
-public func encodeName(buf: [UInt8], name: String) throws -> [UInt8] {
+public func encodeName(_ buf: [UInt8], name: String) throws -> [UInt8] {
     return try encodeBuf(buf, code: Names[name])
 }
 
 /// ValidCode checks whether a multihash code is valid.
-public func validCode(code: Int?) -> Bool {
+public func validCode(_ code: Int?) -> Bool {
     
     if let c = code {
         if appCode(c) == true {
@@ -191,6 +191,6 @@ public func validCode(code: Int?) -> Bool {
 }
 
 /// AppCode checks whether a multihash code is part of the App range.
-public func appCode(code: Int) -> Bool {
+public func appCode(_ code: Int) -> Bool {
     return code >= 0 && code < 0x10
 }

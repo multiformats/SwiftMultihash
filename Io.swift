@@ -16,9 +16,9 @@
 
 import Foundation
 
-enum MultihashIOError : ErrorType {
-    case EndOfBuffer
-    case OperationFailure
+enum MultihashIOError : ErrorProtocol {
+    case endOfBuffer
+    case operationFailure
 }
 
 // English language error descriptions
@@ -26,9 +26,9 @@ extension MultihashIOError {
     var description: String {
         get {
             switch self {
-            case .EndOfBuffer:
+            case .endOfBuffer:
                 return "End of buffer reached."
-            case .OperationFailure:
+            case .operationFailure:
                 return "Operation failure."
             }
         }
@@ -46,19 +46,19 @@ public protocol Reader {
 // Writer is an NSOutputStream wrapper that exposes a function
 // to write a whole multihash.
 public protocol Writer {
-    func writeMultihash(mHash: Multihash) throws
+    func writeMultihash(_ mHash: Multihash) throws
 }
 
-public func newReader(reader: NSInputStream) -> Reader {
+public func newReader(_ reader: InputStream) -> Reader {
     return MultihashReader(inStream: reader)
 }
 
-public func newWriter(writer: NSOutputStream) -> Writer {
+public func newWriter(_ writer: NSOutputStream) -> Writer {
     return MultihashWriter(outStream: writer)
 }
 
 public struct MultihashReader {
-    let inStream: NSInputStream
+    let inStream: InputStream
 }
 
 public struct MultihashWriter {
@@ -69,8 +69,8 @@ extension MultihashReader: Reader {
     
     public func read() throws -> [UInt8] {
         
-        var readBuf = [UInt8](count: defaultBufSize, repeatedValue: 0)
-        try inStream.readToBuffer(&readBuf, maxLength: defaultBufSize)
+        var readBuf = [UInt8](repeating: 0, count: defaultBufSize)
+        try _ = inStream.readToBuffer(&readBuf, maxLength: defaultBufSize)
 
         return readBuf
     }
@@ -78,32 +78,32 @@ extension MultihashReader: Reader {
     public func readMultihash() throws -> Multihash {
 
         // Read just the header first.
-        var multihashHeader = [UInt8](count: 2, repeatedValue: 0)
-        try inStream.readToBuffer(&multihashHeader, maxLength: multihashHeader.count)
+        var multihashHeader = [UInt8](repeating: 0, count: 2)
+        try _ = inStream.readToBuffer(&multihashHeader, maxLength: multihashHeader.count)
         
         let hashLength = Int(multihashHeader[1])
     
         if hashLength > 127 {
             // return varints not yet supported error
-            throw MultihashIOError.EndOfBuffer
+            throw MultihashIOError.endOfBuffer
         }
         
         // Read the rest
-        var multiHash = [UInt8](count: hashLength, repeatedValue: 0)
-        try inStream.readToBuffer(&multiHash, maxLength: hashLength)
+        var multiHash = [UInt8](repeating: 0, count: hashLength)
+        try _ = inStream.readToBuffer(&multiHash, maxLength: hashLength)
         
         return try cast(multihashHeader+multiHash)
     }
 }
 
-extension NSInputStream {
-    func readToBuffer(buffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) throws -> Int {
+extension InputStream {
+    func readToBuffer(_ buffer: UnsafeMutablePointer<UInt8>, maxLength len: Int) throws -> Int {
         let result = read(buffer, maxLength: len)
         switch true {
         case result == 0:
-            throw MultihashIOError.EndOfBuffer
+            throw MultihashIOError.endOfBuffer
         case result < 0:
-            throw MultihashIOError.OperationFailure
+            throw MultihashIOError.operationFailure
         default:
             return result
         }
@@ -112,25 +112,25 @@ extension NSInputStream {
 
 extension MultihashWriter: Writer {
     
-    func write(buffer: [UInt8]) throws {
+    func write(_ buffer: [UInt8]) throws {
         var buf = buffer
-        try outStream.writeBuffer(&buf, maxLength: buf.count)
+        try _ = outStream.writeBuffer(&buf, maxLength: buf.count)
     }
 
-    public func writeMultihash(mHash: Multihash) throws {
+    public func writeMultihash(_ mHash: Multihash) throws {
         var hashBuf = mHash.value
-        try outStream.writeBuffer(&hashBuf, maxLength: hashBuf.count)
+        try _ = outStream.writeBuffer(&hashBuf, maxLength: hashBuf.count)
     }
 }
 
 extension NSOutputStream {
-    func writeBuffer(buffer: UnsafePointer<UInt8>, maxLength len: Int) throws -> Int {
+    func writeBuffer(_ buffer: UnsafePointer<UInt8>, maxLength len: Int) throws -> Int {
         let result = write(buffer, maxLength: len)
         switch true {
         case result == 0:
-            throw MultihashIOError.EndOfBuffer
+            throw MultihashIOError.endOfBuffer
         case result < 0:
-            throw MultihashIOError.OperationFailure
+            throw MultihashIOError.operationFailure
         default:
             return result
         }
