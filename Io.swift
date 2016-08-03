@@ -16,7 +16,7 @@
 
 import Foundation
 
-enum MultihashIOError : ErrorProtocol {
+enum MultihashIOError : Error {
     case endOfBuffer
     case operationFailure
 }

@@ -9,7 +9,7 @@
 import Foundation
 import CommonCrypto
 
-enum MultihashSumError : ErrorProtocol {
+enum MultihashSumError : Error {
     case invalidMultihash(Int)
     case notImplemented
     case noDefaultLength(Int)

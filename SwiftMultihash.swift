@@ -10,7 +10,7 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
-enum MultihashError : ErrorProtocol {
+enum MultihashError : Error {
     case unknownCode
     case hashTooShort
     case hashTooLong
@@ -26,15 +26,15 @@ extension MultihashError {
             switch self {
             case .unknownCode:
                 return "Unknown multihash code."
-            case hashTooShort:
+            case .hashTooShort:
                 return "Multihash too short. Must be > 3 bytes"
-            case hashTooLong:
+            case .hashTooLong:
                 return "Multihash too long. Must be < 129 bytes"
-            case lengthNotSupported:
+            case .lengthNotSupported:
                 return "Multihash does not yet support digests longer than 127 bytes"
-            case hexConversionFail:
+            case .hexConversionFail:
                 return "Error occurred in hex conversion."
-            case inconsistentLength(let len):
+            case .inconsistentLength(let len):
                 return "Multihash length inconsistent. \(len)"
             }
         }
