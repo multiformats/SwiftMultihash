@@ -1,11 +1,26 @@
 # Swift Multihash
-[multihash](//github.com/jbenet/multihash) implementation in Swift.
 
-## Installation
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
+> Swift implementation of [multihash](//github.com/multiformats/multihash)
+
+## Table of Contents
+
+- [Install](#install)
+    - [Carthage](#carthage)
+      - [If you get the error 'Project "VarInt.xcodeproj" has no shared schemes'](#if-you-get-the-error-project-varintxcodeproj-has-no-shared-schemes)
+      - [You will then need to add frameworks to your own Xcode project:](#you-will-then-need-to-add-frameworks-to-your-own-xcode-project)
+  - [Requirements](#requirements)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Install
+
 #### Carthage
-Add the following to your Cartfile 
+Add the following to your Cartfile:
 ```
-github "NeoTeo/SwiftMultihash"
+github "multihash/SwiftMultihash"
 ```
 Then, in the root of your project, type:
 `carthage update --platform Mac`
@@ -28,11 +43,13 @@ Make sure your scheme is marked shared. For more details see [here](https://gith
  For more information on how to install via Carthage see the [README][carthage-installation]
 
  [carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
-## Requirements
- Swift 2
+
+### Requirements
+
+- Swift 2
 
 ## Usage
- 
+
 ```Swift
 import SwiftMultihash 
 import SwiftHex
@@ -57,6 +74,12 @@ func test() {
 }
 ```
 
+## Contribute
+
+Contributions are welcome! Check out [the issues](//github.com/multiformats/SwiftMultihash/issues).
+
+If editing this README, note that this README should be [standard-readme](//github.com/RichardLitt/standard-readme) compatible.
+
 ## License
 
-MIT
+[MIT](LICENSE) © [Matteo Sartori](//github.com/NeoTeo)
