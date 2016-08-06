@@ -1,11 +1,13 @@
 # Swift Multihash
-[multihash](//github.com/jbenet/multihash) implementation in Swift.
 
-## Installation
+> Swift implementation of [multihash](//github.com/multiformats/multihash)
+
+## Install
+
 #### Carthage
-Add the following to your Cartfile 
+Add the following to your Cartfile:
 ```
-github "NeoTeo/SwiftMultihash"
+github "multihash/SwiftMultihash"
 ```
 Then, in the root of your project, type:
 `carthage update --platform Mac`
@@ -28,11 +30,13 @@ Make sure your scheme is marked shared. For more details see [here](https://gith
  For more information on how to install via Carthage see the [README][carthage-installation]
 
  [carthage-installation]: https://github.com/Carthage/Carthage#adding-frameworks-to-an-application
-## Requirements
- Swift 2
+
+### Requirements
+
+- Swift 2
 
 ## Usage
- 
+
 ```Swift
 import SwiftMultihash 
 import SwiftHex
@@ -57,6 +61,10 @@ func test() {
 }
 ```
 
+## Contribute
+
+Contributions are welcome! Check out [the issues](//github.com/multiformats/SwiftMultihash/issues).
+
 ## License
 
-MIT
+[MIT](LICENSE) © [Matteo Sartori](//github.com/NeoTeo)
