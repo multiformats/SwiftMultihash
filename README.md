@@ -1,6 +1,19 @@
 # Swift Multihash
 
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+
 > Swift implementation of [multihash](//github.com/multiformats/multihash)
+
+## Table of Contents
+
+- [Install](#install)
+    - [Carthage](#carthage)
+      - [If you get the error 'Project "VarInt.xcodeproj" has no shared schemes'](#if-you-get-the-error-project-varintxcodeproj-has-no-shared-schemes)
+      - [You will then need to add frameworks to your own Xcode project:](#you-will-then-need-to-add-frameworks-to-your-own-xcode-project)
+  - [Requirements](#requirements)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
 
 ## Install
 
@@ -64,6 +77,8 @@ func test() {
 ## Contribute
 
 Contributions are welcome! Check out [the issues](//github.com/multiformats/SwiftMultihash/issues).
+
+If editing this README, note that this README should be [standard-readme](//github.com/RichardLitt/standard-readme) compatible.
 
 ## License
 
