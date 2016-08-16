@@ -1,6 +1,8 @@
 # Swift Multihash
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![](https://img.shields.io/badge/project-multiformats-blue.svg?style=flat-square)](http://github.com/multiformats/multiformats)
+[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
 
 > Swift implementation of [multihash](//github.com/multiformats/multihash)
 
@@ -12,6 +14,7 @@
       - [You will then need to add frameworks to your own Xcode project:](#you-will-then-need-to-add-frameworks-to-your-own-xcode-project)
   - [Requirements](#requirements)
 - [Usage](#usage)
+- [Maintainers](#maintainers)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -74,9 +77,15 @@ func test() {
 }
 ```
 
+## Maintainers
+
+Captain: [@NeoTeo](https://github.com/NeoTeo).
+
 ## Contribute
 
 Contributions are welcome! Check out [the issues](//github.com/multiformats/SwiftMultihash/issues).
+
+Check out our [contributing document](https://github.com/multiformats/multiformats/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to multiformats are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
 If editing this README, note that this README should be [standard-readme](//github.com/RichardLitt/standard-readme) compatible.
 
