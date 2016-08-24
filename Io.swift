@@ -53,7 +53,7 @@ public func newReader(_ reader: InputStream) -> Reader {
     return MultihashReader(inStream: reader)
 }
 
-public func newWriter(_ writer: NSOutputStream) -> Writer {
+public func newWriter(_ writer: OutputStream) -> Writer {
     return MultihashWriter(outStream: writer)
 }
 
@@ -62,7 +62,7 @@ public struct MultihashReader {
 }
 
 public struct MultihashWriter {
-    let outStream: NSOutputStream
+    let outStream: OutputStream
 }
 
 extension MultihashReader: Reader {
@@ -123,7 +123,7 @@ extension MultihashWriter: Writer {
     }
 }
 
-extension NSOutputStream {
+extension OutputStream {
     func writeBuffer(_ buffer: UnsafePointer<UInt8>, maxLength len: Int) throws -> Int {
         let result = write(buffer, maxLength: len)
         switch true {

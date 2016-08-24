@@ -17,7 +17,7 @@ class SwiftIOTests: XCTestCase {
         
         let cap = 1024
         var buf = [UInt8](repeating: 0, count: cap)
-        let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
+        let outStream = OutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         // Set up an NSStream we can write to and read from.
         for tc in testCases {
@@ -59,7 +59,7 @@ class SwiftIOTests: XCTestCase {
         
         let cap = 1024
         var buf = [UInt8](repeating: 0, count: cap)
-        let outStream = NSOutputStream(toBuffer: &buf, capacity: cap)
+        let outStream = OutputStream(toBuffer: &buf, capacity: cap)
         outStream.open()
         
         let writer = newWriter(outStream)
