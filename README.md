@@ -49,7 +49,7 @@ Make sure your scheme is marked shared. For more details see [here](https://gith
 
 ### Requirements
 
-- Swift 2
+- Swift 3
 
 ## Usage
 
