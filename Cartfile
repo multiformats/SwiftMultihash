@@ -1,2 +1,1 @@
-github "NeoTeo/SwiftHex" "swift3"
-github "NeoTeo/SwiftBase58" "swift3"
+github "NeoTeo/SwiftBase58" "master"
