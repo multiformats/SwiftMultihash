@@ -1,8 +1,9 @@
-# Swift Multihash
+# SwiftMultihash
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![](https://img.shields.io/badge/project-multiformats-blue.svg?style=flat-square)](http://github.com/multiformats/multiformats)
-[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![](https://img.shields.io/badge/project-multiformats-blue.svg?style=flat-square)](https://github.com/multiformats/multiformats)
+[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](https://webchat.freenode.net/?channels=%23ipfs)
+[![](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 > Swift implementation of [multihash](//github.com/multiformats/multihash)
 
@@ -83,12 +84,12 @@ Captain: [@NeoTeo](https://github.com/NeoTeo).
 
 ## Contribute
 
-Contributions are welcome! Check out [the issues](//github.com/multiformats/SwiftMultihash/issues).
+Contributions are welcome! Check out [the issues](https://github.com/multiformats/SwiftMultihash/issues).
 
-Check out our [contributing document](https://github.com/multiformats/multiformats/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to multiformats are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+Check out our [contributing document](https://github.com/multiformats/multiformats/blob/master/contributing.md) for more information on how we work, and about contributing in general. Please be aware that all interactions related to Multiformats are subject to the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
-If editing this README, note that this README should be [standard-readme](//github.com/RichardLitt/standard-readme) compatible.
+Small note: If editing the README, note that this README should be [standard-readme](https://github.com/RichardLitt/standard-readme) compatible.
 
 ## License
 
-[MIT](LICENSE) © [Matteo Sartori](//github.com/NeoTeo)
+[MIT](LICENSE) © 2015 [Matteo Sartori](https://github.com/NeoTeo)
