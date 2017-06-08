@@ -116,7 +116,7 @@ class SwiftMultihashTests: XCTestCase {
                 }
                 
                 if dec.name != tc.name {
-                    XCTFail("Decoded name mismatch: \(dec.name) \(tc.name)")
+                    XCTFail("Decoded name mismatch: \(String(describing: dec.name)) \(tc.name)")
                 }
                 
                 if dec.length != ob.count {
@@ -141,10 +141,10 @@ class SwiftMultihashTests: XCTestCase {
     func testTable() {
         for (k, v) in tCodes {
             if Codes[k] != v {
-                XCTFail("Table mismatch: \(Codes[k]) \(v)")
+                XCTFail("Table mismatch: \(String(describing: Codes[k])) \(v)")
             }
             if Names[v] != k {
-                XCTFail("Table mismatch: \(Names[v]) \(k)")
+                XCTFail("Table mismatch: \(String(describing: Names[v])) \(k)")
             }
         }
     }
@@ -157,7 +157,7 @@ class SwiftMultihashTests: XCTestCase {
             let o = try decodeBuf(mhbuf)
                 
             let mhhex = SwiftHex.encodeToString(hexBytes: o.digest)
-            print("obj: \(o.name) \(o.code) \(o.length) \(mhhex)")
+            print("obj: \(String(describing: o.name)) \(o.code) \(o.length) \(mhhex)")
         } catch {
             let error = error as! MultihashError
             XCTFail(error.description)
