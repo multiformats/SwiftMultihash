@@ -146,6 +146,7 @@ public func decodeBuf(_ buf: [UInt8]) throws -> DecodedMultihash {
     
     if dm.digest.count != dm.length {
         let b0 = Int(buf[0])
+        print("the buf is \(String(describing: String(bytes: buf, encoding: .utf8)))")
         print("SwiftMultihash decodeBuf error: buf[0] is \(b0), and code is \(String(describing: Codes[b0])) and buf[1] is \(buf[1])")
         throw MultihashError.inconsistentLength(dm.length)
     }
