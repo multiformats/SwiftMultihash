@@ -1,1 +1,2 @@
 github "NeoTeo/SwiftBase58"
+github "NeoTeo/VarInt"

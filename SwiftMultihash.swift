@@ -10,6 +10,8 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
+import VarInt
+
 enum MultihashError : Error {
     case unknownCode
     case hashTooShort
