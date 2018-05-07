@@ -10,7 +10,7 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
-//import VarInt
+import VarInt
 
 enum MultihashError : Error {
     case unknownCode
@@ -146,11 +146,13 @@ public func decodeBuf(_ buf: [UInt8]) throws -> DecodedMultihash {
 
     let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
     
+    let b0 = varInt(buf) //Int(buf[0])
+    print("The var int read is \(b0.0) and was \(b0.1) bytes")
+
     if dm.digest.count != dm.length {
-        let b0 = Int(buf[0])
         let strbuf = buf.map { String(format:"%02X ", $0) }.joined()
         print("the buf is \(strbuf)")
-        print("SwiftMultihash decodeBuf error: buf[0] is \(b0), and code is \(String(describing: Codes[b0])) and buf[1] is \(buf[1])")
+//        print("SwiftMultihash decodeBuf error: buf[0] is \(b0), and code is \(String(describing: Codes[b0])) and buf[1] is \(buf[1])")
         throw MultihashError.inconsistentLength(dm.length)
     }
 
