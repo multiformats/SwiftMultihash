@@ -10,7 +10,7 @@ import Foundation
 import SwiftHex
 import SwiftBase58
 
-import VarInt
+//import VarInt
 
 enum MultihashError : Error {
     case unknownCode
