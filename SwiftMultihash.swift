@@ -16,6 +16,8 @@ enum MultihashError : Error {
     case unknownCode
     case hashTooShort
     case hashTooLong
+    case VarIntBufferTooShort
+    case VarIntTooLarge
     case lengthNotSupported
     case hexConversionFail
     case inconsistentLength(Int)
@@ -32,6 +34,10 @@ extension MultihashError {
                 return "Multihash too short. Must be > 3 bytes"
             case .hashTooLong:
                 return "Multihash too long. Must be < 129 bytes"
+            case .VarIntBufferTooShort:
+                return "Unsigned Variable Integer buffer too short."
+            case .VarIntTooLarge:
+                return "Unsigned Variable int is too big. Max is 64 bits."
             case .lengthNotSupported:
                 return "Multihash does not yet support digests longer than 127 bytes"
             case .hexConversionFail:
@@ -108,6 +114,21 @@ public func ==(lhs: Multihash, rhs: Multihash) -> Bool {
     return lhs.value == rhs.value
 }
 
+
+/// Read and strip the unsigned variable int buffer size value from front of buffer
+///
+/// - Parameter buffer: The buffer prefixed with the size of the payload as an uvarint
+/// - Returns: the size as an int64 and the buffer with the uvarint indicating size removed.
+/// - Throws: <#throws value description#>
+func uVarInt(buffer: [UInt8]) throws -> (UInt64, [UInt8]) {
+    let (size, bytesRead) = VarInt.uVarInt(buffer)
+    if bytesRead == 0 { throw MultihashError.VarIntBufferTooShort }
+    if bytesRead < 0 { throw MultihashError.VarIntTooLarge }
+    
+    // Return the size as read from the uvarint and the buffer without the uvarint
+    return (size, Array(buffer[bytesRead..<buffer.count]))
+}
+
 public func fromHexString(_ theString: String) throws -> Multihash {
     
     let buf = try SwiftHex.decodeString(hexString: theString) 
@@ -140,11 +161,16 @@ public func decodeBuf(_ buf: [UInt8]) throws -> DecodedMultihash {
     if buf.count < 3 {
         throw MultihashError.hashTooShort
     }
-    if buf.count > 129 {
+
+    let (code, buffer) = try uVarInt(buffer: buf)
+    let (digestLength, buf) = try uVarInt(buffer: buffer)
+    
+    if digestLength > Int32.max {
         throw MultihashError.hashTooLong
     }
 
-    let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
+//    let dm = DecodedMultihash(code: Int(buf[0]), name: Codes[Int(buf[0])], length: Int(buf[1]), digest: Array(buf[2..<buf.count]))
+    let dm = DecodedMultihash(code: Int(code), name: Codes[Int(code)], length: Int(digestLength), digest: buf)
     
     let strbuf = buf.map { String(format:"%02X ", $0) }.joined()
     print("the buf is \(strbuf)")
@@ -153,8 +179,6 @@ public func decodeBuf(_ buf: [UInt8]) throws -> DecodedMultihash {
 //    print("The var int read is \(b0.0) and was \(b0.1) bytes")
 
     if dm.digest.count != dm.length {
-        let b0 = Int(buf[0])
-        print("SwiftMultihash decodeBuf error: buf[0] is \(b0), and code is \(String(describing: Codes[b0])) and buf[1] is \(buf[1])")
         throw MultihashError.inconsistentLength(dm.length)
     }
 
