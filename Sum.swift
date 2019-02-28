@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CommonCrypto
 
 enum MultihashSumError : Error {
     case invalidMultihash(Int)
