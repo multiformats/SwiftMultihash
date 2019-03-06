@@ -1,5 +1,6 @@
 .DS_Store
 Build
+.build
 # Xcode ignores
 *.xcbkptlist
 *.xcuserstate
