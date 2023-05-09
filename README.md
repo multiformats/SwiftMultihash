@@ -1,3 +1,5 @@
+**This project is no longer maintained and has been archived.**
+
 # SwiftMultihash
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
